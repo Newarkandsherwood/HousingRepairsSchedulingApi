@@ -112,5 +112,5 @@ jobs:
         with:
           app-name: 'HousingRepairsSchedulingApi-Newark'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CC9571E9409C4B74B0A51AD092152F03 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_PRODUCTION }}
           package: .
