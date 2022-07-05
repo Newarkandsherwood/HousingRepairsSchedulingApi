@@ -70,6 +70,53 @@ jobs:
           name: .net-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
+  infrastructure:
+    name: "Provision Infrastructure"
+    env:
+      ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.AZURE_AD_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: "./terraform"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" -backend-config="container_name=${{ secrets.STATE_CONTAINER_NAME }}" -backend-config="key=${{ secrets.STATE_KEY_NAME }}"
+      - name: Setup tfvars
+        run: |
+          touch env.tfvars
+          echo "service_plan_name              = \"${{ secrets.SERVICE_PLAN_NAME }}\"" >> env.tfvars
+          echo "resource_group_name            = \"${{ secrets.RESOURCE_GROUP_NAME }}\"" >> env.tfvars
+          echo "resource_group_location        = \"${{ secrets.RESOURCE_GROUP_LOCATION }}\"" >> env.tfvars
+          echo "app_service_name               = \"${{ secrets.APP_SERVICE_NAME }}\"" >> env.tfvars
+          echo "authentication_identifier      = \"${{ secrets.AUTHENTICATION_IDENTIFIER }}\"" >> env.tfvars
+          echo "jwt_secret_production          = \"${{ secrets.JWT_SECRET_PRODUCTION }}\"" >> env.tfvars
+          echo "jwt_secret_staging             = \"${{ secrets.JWT_SECRET_STAGING }}\"" >> env.tfvars
+          echo "sentry_dsn                     = \"${{ secrets.SENTRY_DSN }}\"" >> env.tfvars
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color -var-file="env.tfvars"
+
+      - name: Terraform Apply
+        id: terraform_apply
+        run: terraform apply -auto-approve -var-file="env.tfvars"
+
   deploy-staging:
     name: "Deploy Staging"
     runs-on: ubuntu-latest
