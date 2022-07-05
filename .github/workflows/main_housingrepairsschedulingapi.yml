@@ -120,7 +120,7 @@ jobs:
   deploy-staging:
     name: "Deploy Staging"
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, infrastructure]
     environment:
       name: 'Staging'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
