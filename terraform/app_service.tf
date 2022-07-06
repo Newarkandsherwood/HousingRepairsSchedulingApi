@@ -13,6 +13,11 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
     JWT_SECRET                = var.jwt_secret_staging
     SENTRY_DSN                = var.sentry_dsn
   }
+
+  auth_settings {
+    enabled = false
+  }
+
   site_config {}
 }
 
@@ -21,6 +26,11 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
   service_plan_id     = data.azurerm_service_plan.hro-app-service-plan.id
+
+  auth_settings {
+    enabled = false
+  }
+
   site_config {}
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Production"
