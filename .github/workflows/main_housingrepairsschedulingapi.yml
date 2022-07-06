@@ -135,7 +135,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'HousingRepairsSchedulingApi-Newark'
+          app-name: ${{ secrets.APP_SERVICE_NAME }}
           slot-name: 'Staging'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_STAGING }}
           package: .
@@ -157,7 +157,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'HousingRepairsSchedulingApi-Newark'
+          app-name: ${{ secrets.APP_SERVICE_NAME }}
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_PRODUCTION }}
           package: .
