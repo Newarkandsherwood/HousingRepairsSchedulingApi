@@ -71,6 +71,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   infrastructure:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: "Provision Infrastructure"
     env:
       ARM_CLIENT_ID: ${{ secrets.AZURE_AD_CLIENT_ID }}
