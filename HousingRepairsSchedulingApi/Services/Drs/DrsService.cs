@@ -10,10 +10,10 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
     public class DrsService : IDrsService
     {
-        private const string DrsContract = "0";
+        private const string DrsContract = "RESP";
         private const string DummyPrimaryOrderNumber = "HousingRepairsOnlineDummyPrimaryOrderNumber";
         private const string DummyUserId = "HousingRepairsOnlineUserId";
-        private const string Priority = "Priority 20 Days";
+        private const string Priority = "standard";
 
         private readonly SOAP drsSoapClient;
         private readonly IOptions<DrsOptions> drsOptions;
