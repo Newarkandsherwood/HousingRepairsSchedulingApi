@@ -22,3 +22,12 @@ variable "jwt_secret_staging" {
 variable "sentry_dsn" {
   type = string
 }
+variable "drs_api_address" {
+  default = ""
+}
+variable "drs_login" {
+  default = ""
+}
+variable "drs_password" {
+  default = ""
+}
