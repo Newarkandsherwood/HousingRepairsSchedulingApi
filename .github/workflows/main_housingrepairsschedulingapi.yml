@@ -108,6 +108,7 @@ jobs:
           echo "drs_api_address                = \"${{ secrets.DRS_API_ADDRESS }}\"" >> env.tfvars
           echo "drs_login                      = \"${{ secrets.DRS_LOGIN }}\"" >> env.tfvars
           echo "drs_password                   = \"${{ secrets.DRS_PASSWORD }}\"" >> env.tfvars
+          echo "drs_contract                   = \"${{ secrets.DRS_CONTRACT }}\"" >> env.tfvars
 
       - name: Terraform Validate
         id: validate

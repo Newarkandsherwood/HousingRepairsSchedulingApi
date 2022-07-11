@@ -39,7 +39,6 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 });
 
             systemUnderTest = new DrsService(soapMock.Object, drsOptionsMock.Object);
-
         }
 
         [Fact]
@@ -312,6 +311,102 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             yield return new object[] { new ArgumentNullException(), null };
             yield return new object[] { new ArgumentException(), "" };
             yield return new object[] { new ArgumentException(), " " };
+        }
+
+        [Theory]
+        [InlineData("Contract1")]
+        [InlineData("Contract2")]
+#pragma warning disable CA1707
+        public async void GivenDrsContract_WhenCheckingAvailability_ThenDrsContractIsUsed(string drsContract)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsContract);
+
+            var dateTime = new DateTime(2022, 1, 1);
+            string actualContract = null;
+
+            soapMock.Setup(x => x.checkAvailabilityAsync(It.IsAny<checkAvailability>()))
+                .Callback<checkAvailability>(request => actualContract = request.checkAvailability1.theOrder.contract)
+                .ReturnsAsync(new checkAvailabilityResponse(
+                    new xmbCheckAvailabilityResponse { theSlots = new[] { new daySlotsInfo { day = dateTime } } }));
+
+            // Act
+            _ = await systemUnderTest.CheckAvailability(SorCode, LocationId, dateTime);
+
+            // Assert
+            actualContract.Should().NotBeNull();
+            actualContract.Should().Be(drsContract);
+        }
+
+        [Theory]
+        [InlineData("Contract1")]
+        [InlineData("Contract2")]
+#pragma warning disable CA1707
+        public async void GivenDrsContract_WhenCreatingOrder_ThenDrsContractIsUsed(string drsContract)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsContract);
+
+            string actualContract = null;
+
+            soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
+                .Callback<createOrder>(request => actualContract = request.createOrder1.theOrder.contract)
+                .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
+                {
+                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }
+                }));
+
+            // Act
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId);
+
+            // Assert
+            actualContract.Should().NotBeNull();
+            actualContract.Should().Be(drsContract);
+        }
+
+        [Theory]
+        [InlineData("Contract1")]
+        [InlineData("Contract2")]
+#pragma warning disable CA1707
+        public async void GivenDrsContract_WhenSchedulingABooking_ThenDrsContractIsUsed(string drsContract)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsContract);
+
+            string actualContract = null;
+
+            soapMock.Setup(x => x.scheduleBookingAsync(It.IsAny<scheduleBooking>()))
+                .Callback<scheduleBooking>(request => actualContract = request.scheduleBooking1.theBooking.contract);
+            var startDate = new DateTime(2022, 1, 21);
+            var endDate = startDate.AddDays(1);
+
+            // Act
+            await systemUnderTest.ScheduleBooking(BookingReference, BookingId, startDate, endDate);
+
+            // Assert
+            actualContract.Should().NotBeNull();
+            actualContract.Should().Be(drsContract);
+        }
+
+        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMock(string contract)
+        {
+            var drsOptionsMock = new Mock<IOptions<DrsOptions>>();
+            drsOptionsMock.Setup(x => x.Value)
+                .Returns(new DrsOptions { Login = "login", Password = "password", Contract = contract });
+
+            var soapMock = new Mock<SOAP>();
+            soapMock.Setup(x => x.openSessionAsync(It.IsAny<openSession>()))
+                .ReturnsAsync(new openSessionResponse
+                {
+                    @return = new xmbOpenSessionResponse { sessionId = "sessionId" }
+                });
+
+            var drsService = new DrsService(soapMock.Object, drsOptionsMock.Object);
+
+            return (drsService, soapMock);
         }
     }
 }
