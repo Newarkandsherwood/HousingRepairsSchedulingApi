@@ -12,7 +12,6 @@ namespace HousingRepairsSchedulingApi.Services.Drs
     {
         private const string DummyPrimaryOrderNumber = "HousingRepairsOnlineDummyPrimaryOrderNumber";
         private const string DummyUserId = "HousingRepairsOnlineUserId";
-        private const string Priority = "standard";
 
         private readonly SOAP drsSoapClient;
         private readonly IOptions<DrsOptions> drsOptions;
@@ -45,7 +44,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                     contract = drsOptions.Value.Contract,
                     locationID = locationId,
                     primaryOrderNumber = DummyPrimaryOrderNumber,
-                    priority = Priority,
+                    priority = drsOptions.Value.Priority,
                     theBookingCodes = new[]{
                         new bookingCode {
                             bookingCodeSORCode = sorCode,
@@ -91,7 +90,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                     locationID = locationId,
                     orderComments = " ",
                     primaryOrderNumber = bookingReference,
-                    priority = Priority,
+                    priority = drsOptions.Value.Priority,
                     targetDate = DateTime.Today.AddDays(20),
                     userId = DummyUserId,
                     theBookingCodes = new[]

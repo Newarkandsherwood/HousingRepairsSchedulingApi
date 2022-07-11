@@ -34,3 +34,6 @@ variable "drs_password" {
 variable "drs_contract" {
   default = ""
 }
+variable "drs_priority" {
+  default = ""
+}
