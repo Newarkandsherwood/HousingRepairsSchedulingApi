@@ -12,6 +12,9 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
     AUTHENTICATION_IDENTIFIER = var.authentication_identifier
     JWT_SECRET                = var.jwt_secret_staging
     SENTRY_DSN                = var.sentry_dsn
+    DrsOptions__ApiAddress    = var.drs_api_address
+    DrsOptions__Login         = var.drs_login
+    DrsOptions__Password      = var.drs_password
   }
 
   auth_settings {
@@ -37,5 +40,8 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
     AUTHENTICATION_IDENTIFIER = var.authentication_identifier
     JWT_SECRET                = var.jwt_secret_production
     SENTRY_DSN                = var.sentry_dsn
+    DrsOptions__ApiAddress    = var.drs_api_address
+    DrsOptions__Login         = var.drs_login
+    DrsOptions__Password      = var.drs_password
   }
 }

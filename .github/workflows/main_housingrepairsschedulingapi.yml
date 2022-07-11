@@ -105,6 +105,9 @@ jobs:
           echo "jwt_secret_production          = \"${{ secrets.JWT_SECRET_PRODUCTION }}\"" >> env.tfvars
           echo "jwt_secret_staging             = \"${{ secrets.JWT_SECRET_STAGING }}\"" >> env.tfvars
           echo "sentry_dsn                     = \"${{ secrets.SENTRY_DSN }}\"" >> env.tfvars
+          echo "drs_api_address                = \"${{ secrets.DRS_API_ADDRESS }}\"" >> env.tfvars
+          echo "drs_login                      = \"${{ secrets.DRS_LOGIN }}\"" >> env.tfvars
+          echo "drs_password                   = \"${{ secrets.DRS_PASSWORD }}\"" >> env.tfvars
 
       - name: Terraform Validate
         id: validate
