@@ -10,7 +10,6 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
     public class DrsService : IDrsService
     {
-        private const string DrsContract = "RESP";
         private const string DummyPrimaryOrderNumber = "HousingRepairsOnlineDummyPrimaryOrderNumber";
         private const string DummyUserId = "HousingRepairsOnlineUserId";
         private const string Priority = "standard";
@@ -43,7 +42,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 theOrder = new order
                 {
                     userId = DummyUserId,
-                    contract = DrsContract,
+                    contract = drsOptions.Value.Contract,
                     locationID = locationId,
                     primaryOrderNumber = DummyPrimaryOrderNumber,
                     priority = Priority,
@@ -88,7 +87,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 sessionId = this.sessionId,
                 theOrder = new order
                 {
-                    contract = DrsContract,
+                    contract = drsOptions.Value.Contract,
                     locationID = locationId,
                     orderComments = " ",
                     primaryOrderNumber = bookingReference,
@@ -127,7 +126,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 theBooking = new booking
                 {
                     bookingId = bookingId,
-                    contract = DrsContract,
+                    contract = drsOptions.Value.Contract,
                     primaryOrderNumber = bookingReference,
                     planningWindowStart = startDateTime,
                     planningWindowEnd = endDateTime,

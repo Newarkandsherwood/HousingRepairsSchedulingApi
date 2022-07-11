@@ -15,6 +15,7 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
     DrsOptions__ApiAddress    = var.drs_api_address
     DrsOptions__Login         = var.drs_login
     DrsOptions__Password      = var.drs_password
+    DrsOptions__Contract      = var.drs_contract
   }
 
   auth_settings {
@@ -43,5 +44,6 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
     DrsOptions__ApiAddress    = var.drs_api_address
     DrsOptions__Login         = var.drs_login
     DrsOptions__Password      = var.drs_password
+    DrsOptions__Contract      = var.drs_contract
   }
 }

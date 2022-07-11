@@ -10,5 +10,6 @@ namespace HousingRepairsSchedulingApi.Services.Drs
         public int SearchTimeSpanInDays { get; set; } = 14;
         public int AppointmentLeadTimeInDays { get; set; } = 7;
         public int MaximumNumberOfRequests { get; set; } = 10;
+        public string Contract { get; set; }
     }
 }
