@@ -321,7 +321,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 #pragma warning restore CA1707
         {
             // Arrange
-            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsContract);
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithContract(drsContract);
 
             var dateTime = new DateTime(2022, 1, 1);
             string actualContract = null;
@@ -347,7 +347,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 #pragma warning restore CA1707
         {
             // Arrange
-            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsContract);
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithContract(drsContract);
 
             string actualContract = null;
 
@@ -374,7 +374,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 #pragma warning restore CA1707
         {
             // Arrange
-            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsContract);
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithContract(drsContract);
 
             string actualContract = null;
 
@@ -442,11 +442,15 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             actualPriority.Should().Be(drsPriority);
         }
 
-        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMock(string contract)
+        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMock(Action<DrsOptions> additionalSetup)
         {
             var drsOptionsMock = new Mock<IOptions<DrsOptions>>();
+            var drsOptions = new DrsOptions { Login = "login", Password = "password" };
+            additionalSetup(drsOptions);
+
             drsOptionsMock.Setup(x => x.Value)
-                .Returns(new DrsOptions { Login = "login", Password = "password", Contract = contract });
+                .Returns(drsOptions);
+
 
             var soapMock = new Mock<SOAP>();
             soapMock.Setup(x => x.openSessionAsync(It.IsAny<openSession>()))
@@ -460,22 +464,18 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             return (drsService, soapMock);
         }
 
+        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMockWithContract(string contract)
+        {
+            Action<DrsOptions> setupContract = drsOptions => drsOptions.Contract = contract;
+
+            return CreateSystemUnderTestAndSoapMock(setupContract);
+        }
+
         private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMockWithPriority(string priority)
         {
-            var drsOptionsMock = new Mock<IOptions<DrsOptions>>();
-            drsOptionsMock.Setup(x => x.Value)
-                .Returns(new DrsOptions { Login = "login", Password = "password", Priority = priority });
+            Action<DrsOptions> setupPriority = drsOptions => drsOptions.Priority = priority;
 
-            var soapMock = new Mock<SOAP>();
-            soapMock.Setup(x => x.openSessionAsync(It.IsAny<openSession>()))
-                .ReturnsAsync(new openSessionResponse
-                {
-                    @return = new xmbOpenSessionResponse { sessionId = "sessionId" }
-                });
-
-            var drsService = new DrsService(soapMock.Object, drsOptionsMock.Object);
-
-            return (drsService, soapMock);
+            return CreateSystemUnderTestAndSoapMock(setupPriority);
         }
     }
 }
