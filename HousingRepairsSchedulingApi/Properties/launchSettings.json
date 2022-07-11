@@ -31,6 +31,7 @@
         "DrsOptions__Login" : "<REPLACE WITH DRS LOGIN>",
         "DrsOptions__Password" : "<REPLACE WITH DRS PASSWORD>",
         "DrsOptions__Contract" : "<REPLACE WITH DRS CONTRACT>",
+        "DrsOptions__Priority" : "<REPLACE WITH DRS PRIORITY>",
         "SENTRY_DSN": "https://<REPLACE WITH SENTRY DSN>"
       }
     }

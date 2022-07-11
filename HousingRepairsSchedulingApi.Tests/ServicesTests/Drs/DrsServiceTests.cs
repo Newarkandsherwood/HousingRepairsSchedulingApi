@@ -391,11 +391,80 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             actualContract.Should().Be(drsContract);
         }
 
+        [Theory]
+        [InlineData("Priority1")]
+        [InlineData("Priority2")]
+        public async void GivenDrsPriority_WhenCheckingAvailability_ThenDrsPriorityIsUsed(string drsPriority)
+        {
+            // Arrange
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithPriority(drsPriority);
+
+            var dateTime = new DateTime(2022, 1, 1);
+            string actualPriority = null;
+
+            soapMock.Setup(x => x.checkAvailabilityAsync(It.IsAny<checkAvailability>()))
+                .Callback<checkAvailability>(request => actualPriority = request.checkAvailability1.theOrder.priority)
+                .ReturnsAsync(new checkAvailabilityResponse(
+                    new xmbCheckAvailabilityResponse { theSlots = new[] { new daySlotsInfo { day = dateTime } } }));
+
+            // Act
+            _ = await systemUnderTest.CheckAvailability(SorCode, LocationId, dateTime);
+
+            // Assert
+            actualPriority.Should().NotBeNull();
+            actualPriority.Should().Be(drsPriority);
+        }
+
+        [Theory]
+        [InlineData("Contract1")]
+        [InlineData("Contract2")]
+#pragma warning disable CA1707
+        public async void GivenDrsPriority_WhenCreatingOrder_ThenDrsPriorityIsUsed(string drsPriority)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithPriority(drsPriority);
+
+            string actualPriority = null;
+
+            soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
+                .Callback<createOrder>(request => actualPriority = request.createOrder1.theOrder.priority)
+                .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
+                {
+                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }
+                }));
+
+            // Act
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId);
+
+            // Assert
+            actualPriority.Should().NotBeNull();
+            actualPriority.Should().Be(drsPriority);
+        }
+
         private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMock(string contract)
         {
             var drsOptionsMock = new Mock<IOptions<DrsOptions>>();
             drsOptionsMock.Setup(x => x.Value)
                 .Returns(new DrsOptions { Login = "login", Password = "password", Contract = contract });
+
+            var soapMock = new Mock<SOAP>();
+            soapMock.Setup(x => x.openSessionAsync(It.IsAny<openSession>()))
+                .ReturnsAsync(new openSessionResponse
+                {
+                    @return = new xmbOpenSessionResponse { sessionId = "sessionId" }
+                });
+
+            var drsService = new DrsService(soapMock.Object, drsOptionsMock.Object);
+
+            return (drsService, soapMock);
+        }
+
+        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMockWithPriority(string priority)
+        {
+            var drsOptionsMock = new Mock<IOptions<DrsOptions>>();
+            drsOptionsMock.Setup(x => x.Value)
+                .Returns(new DrsOptions { Login = "login", Password = "password", Priority = priority });
 
             var soapMock = new Mock<SOAP>();
             soapMock.Setup(x => x.openSessionAsync(It.IsAny<openSession>()))
