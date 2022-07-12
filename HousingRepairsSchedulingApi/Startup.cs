@@ -25,6 +25,7 @@ namespace HousingRepairsSchedulingApi
     {
         private const string HousingRepairsSchedulingApiIssuerId = "Housing Management System Api";
         private const string DrsOptionsApiAddressConfigurationKey = nameof(DrsOptions.ApiAddress);
+        private const int RequiredNumberOfAppointmentDays = 5;
 
         public Startup(IConfiguration configuration)
         {
@@ -61,7 +62,7 @@ namespace HousingRepairsSchedulingApi
                     var appointmentLeadTimeInDays = drsOptions.Value.AppointmentLeadTimeInDays;
                     var maximumNumberOfRequests = drsOptions.Value.MaximumNumberOfRequests;
                     return new DrsAppointmentGateway(sp.GetService<IDrsService>(),
-                        5, appointmentSearchTimeSpanInDays, appointmentLeadTimeInDays, maximumNumberOfRequests);
+                        RequiredNumberOfAppointmentDays, appointmentSearchTimeSpanInDays, appointmentLeadTimeInDays, maximumNumberOfRequests);
                 }
             );
 
