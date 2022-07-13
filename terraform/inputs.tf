@@ -11,10 +11,10 @@ variable "app_service_name" {
   type = string
 }
 variable "authentication_identifier_production" {
-    default = ""
+  default = ""
 }
 variable "authentication_identifier_staging" {
-    default = ""
+  default = ""
 }
 variable "jwt_secret_production" {
   type = string
