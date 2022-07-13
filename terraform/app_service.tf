@@ -6,6 +6,7 @@ data "azurerm_service_plan" "hro-app-service-plan" {
 resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
   name           = "staging"
   app_service_id = azurerm_windows_web_app.hro-scheduling-api.id
+  https_only     = true
 
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Staging"
@@ -23,7 +24,9 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
     enabled = false
   }
 
-  site_config {}
+  site_config {
+    health_check_path = "/health"
+  }
 }
 
 resource "azurerm_windows_web_app" "hro-scheduling-api" {
@@ -31,12 +34,16 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
   service_plan_id     = data.azurerm_service_plan.hro-app-service-plan.id
+  https_only          = true
 
   auth_settings {
     enabled = false
   }
 
-  site_config {}
+  site_config {
+    health_check_path = "/health"
+  }
+
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Production"
     AUTHENTICATION_IDENTIFIER = var.authentication_identifier_production
