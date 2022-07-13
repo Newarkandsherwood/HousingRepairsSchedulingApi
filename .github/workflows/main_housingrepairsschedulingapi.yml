@@ -97,19 +97,25 @@ jobs:
       - name: Setup tfvars
         run: |
           touch env.tfvars
-          echo "service_plan_name              = \"${{ secrets.SERVICE_PLAN_NAME }}\"" >> env.tfvars
-          echo "resource_group_name            = \"${{ secrets.RESOURCE_GROUP_NAME }}\"" >> env.tfvars
-          echo "resource_group_location        = \"${{ secrets.RESOURCE_GROUP_LOCATION }}\"" >> env.tfvars
-          echo "app_service_name               = \"${{ secrets.APP_SERVICE_NAME }}\"" >> env.tfvars
-          echo "authentication_identifier      = \"${{ secrets.AUTHENTICATION_IDENTIFIER }}\"" >> env.tfvars
-          echo "jwt_secret_production          = \"${{ secrets.JWT_SECRET_PRODUCTION }}\"" >> env.tfvars
-          echo "jwt_secret_staging             = \"${{ secrets.JWT_SECRET_STAGING }}\"" >> env.tfvars
-          echo "sentry_dsn                     = \"${{ secrets.SENTRY_DSN }}\"" >> env.tfvars
-          echo "drs_api_address                = \"${{ secrets.DRS_API_ADDRESS }}\"" >> env.tfvars
-          echo "drs_login                      = \"${{ secrets.DRS_LOGIN }}\"" >> env.tfvars
-          echo "drs_password                   = \"${{ secrets.DRS_PASSWORD }}\"" >> env.tfvars
-          echo "drs_contract                   = \"${{ secrets.DRS_CONTRACT }}\"" >> env.tfvars
-          echo "drs_priority                   = \"${{ secrets.DRS_PRIORITY }}\"" >> env.tfvars
+          echo "service_plan_name                         = \"${{ secrets.SERVICE_PLAN_NAME }}\"" >> env.tfvars
+          echo "resource_group_name                       = \"${{ secrets.RESOURCE_GROUP_NAME }}\"" >> env.tfvars
+          echo "resource_group_location                   = \"${{ secrets.RESOURCE_GROUP_LOCATION }}\"" >> env.tfvars
+          echo "app_service_name                          = \"${{ secrets.APP_SERVICE_NAME }}\"" >> env.tfvars
+          echo "authentication_identifier_production      = \"${{ secrets.AUTHENTICATION_IDENTIFIER_PRODUCTION }}\"" >> env.tfvars
+          echo "authentication_identifier_staging         = \"${{ secrets.AUTHENTICATION_IDENTIFIER_STAGING }}\"" >> env.tfvars
+          echo "jwt_secret_production                     = \"${{ secrets.JWT_SECRET_PRODUCTION }}\"" >> env.tfvars
+          echo "jwt_secret_staging                        = \"${{ secrets.JWT_SECRET_STAGING }}\"" >> env.tfvars
+          echo "sentry_dsn                                = \"${{ secrets.SENTRY_DSN }}\"" >> env.tfvars
+          echo "drs_api_address_production                = \"${{ secrets.DRS_API_ADDRESS_PRODUCTION }}\"" >> env.tfvars
+          echo "drs_login_production                      = \"${{ secrets.DRS_LOGIN_PRODUCTION }}\"" >> env.tfvars
+          echo "drs_password_production                   = \"${{ secrets.DRS_PASSWORD_PRODUCTION }}\"" >> env.tfvars
+          echo "drs_contract_production                   = \"${{ secrets.DRS_CONTRACT_PRODUCTION }}\"" >> env.tfvars
+          echo "drs_priority_production                   = \"${{ secrets.DRS_PRIORITY_PRODUCTION }}\"" >> env.tfvars
+          echo "drs_api_address_staging                   = \"${{ secrets.DRS_API_ADDRESS_STAGING }}\"" >> env.tfvars
+          echo "drs_login_staging                         = \"${{ secrets.DRS_LOGIN_STAGING }}\"" >> env.tfvars
+          echo "drs_password_staging                      = \"${{ secrets.DRS_PASSWORD_STAGING }}\"" >> env.tfvars
+          echo "drs_contract_staging                      = \"${{ secrets.DRS_CONTRACT_STAGING }}\"" >> env.tfvars
+          echo "drs_priority_staging                      = \"${{ secrets.DRS_PRIORITY_STAGING }}\"" >> env.tfvars
 
       - name: Terraform Validate
         id: validate

@@ -9,14 +9,14 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
 
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Staging"
-    AUTHENTICATION_IDENTIFIER = var.authentication_identifier
+    AUTHENTICATION_IDENTIFIER = var.authentication_identifier_staging
     JWT_SECRET                = var.jwt_secret_staging
     SENTRY_DSN                = var.sentry_dsn
-    DrsOptions__ApiAddress    = var.drs_api_address
-    DrsOptions__Login         = var.drs_login
-    DrsOptions__Password      = var.drs_password
-    DrsOptions__Contract      = var.drs_contract
-    DrsOptions__Priority      = var.drs_priority
+    DrsOptions__ApiAddress    = var.drs_api_address_staging
+    DrsOptions__Login         = var.drs_login_staging
+    DrsOptions__Password      = var.drs_password_staging
+    DrsOptions__Contract      = var.drs_contract_staging
+    DrsOptions__Priority      = var.drs_priority_staging
   }
 
   auth_settings {
@@ -39,13 +39,13 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
   site_config {}
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Production"
-    AUTHENTICATION_IDENTIFIER = var.authentication_identifier
+    AUTHENTICATION_IDENTIFIER = var.authentication_identifier_production
     JWT_SECRET                = var.jwt_secret_production
     SENTRY_DSN                = var.sentry_dsn
-    DrsOptions__ApiAddress    = var.drs_api_address
-    DrsOptions__Login         = var.drs_login
-    DrsOptions__Password      = var.drs_password
-    DrsOptions__Contract      = var.drs_contract
-    DrsOptions__Priority      = var.drs_priority
+    DrsOptions__ApiAddress    = var.drs_api_address_production
+    DrsOptions__Login         = var.drs_login_production
+    DrsOptions__Password      = var.drs_password_production
+    DrsOptions__Contract      = var.drs_contract_production
+    DrsOptions__Priority      = var.drs_priority_production
   }
 }
