@@ -27,6 +27,13 @@ jobs:
         run: dotnet tool update --global dotnet-format
       - name: Run dotnet format
         run: dotnet format --check --verbosity diagnostic
+      - name: Terraform fmt
+        uses: hashicorp/setup-terraform@v2  
+        id: fmt
+        with:
+          shell: bash
+          working-directory: "./terraform"
+        run: terraform fmt -check        
 
   test:
     name: Test
@@ -86,10 +93,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform fmt
-        id: fmt
-        run: terraform fmt -check
 
       - name: Terraform Init
         id: init
