@@ -12,7 +12,6 @@ on:
     branches:
       - main
 
-
 jobs:
   format:
     name: Format
@@ -27,13 +26,13 @@ jobs:
         run: dotnet tool update --global dotnet-format
       - name: Run dotnet format
         run: dotnet format --check --verbosity diagnostic
-      - name: Terraform fmt
-        uses: hashicorp/setup-terraform@v2  
-        id: fmt
+      - name: Setup Terraform
+        if: always()
+        uses: hashicorp/setup-terraform@v2
         with:
-          shell: bash
-          working-directory: "./terraform"
-        run: terraform fmt -check        
+          terraform_wrapper: false
+      - name: Run Terraform format
+        run: terraform fmt -check ./terraform
 
   test:
     name: Test
