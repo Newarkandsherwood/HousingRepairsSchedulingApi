@@ -55,3 +55,13 @@ variable "drs_contract_staging" {
 variable "drs_priority_staging" {
   default = ""
 }
+
+variable "azure_ad_tenant_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "service_principal_id" {
+  type      = string
+  sensitive = true
+}
