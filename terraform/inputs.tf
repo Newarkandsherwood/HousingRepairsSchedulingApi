@@ -61,7 +61,7 @@ variable "drs_contract_staging" {
   default = ""
 }
 variable "drs_priority_staging" {
-  default   = ""
+  default = ""
 }
 variable "azure_ad_tenant_id" {
   type      = string
