@@ -46,10 +46,10 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
 
   identity {
     type         = "UserAssigned"
-    identity_ids = [var.service_principal_id]
+    identity_ids = [azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id]
   }
 
-  key_vault_reference_identity_id = var.service_principal_id
+  key_vault_reference_identity_id = azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id
 
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Production"
