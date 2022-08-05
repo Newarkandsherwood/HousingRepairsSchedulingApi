@@ -5,5 +5,3 @@ resource "azurerm_user_assigned_identity" "hro-scheduling-api-vault-access-ident
   name       = "hro-scheduling-api-vault-access-identity"
   depends_on = [azurerm_resource_provider_registration.managed-identity-registration]
 }
-
-
