@@ -10,9 +10,9 @@ resource "azurerm_key_vault" "hro-test-api-key-vault" {
 }
 
 resource "azurerm_key_vault_access_policy" "hro-test-api-key-vault-access-policy" {
-  key_vault_id = azurerm_key_vault.hro-test-api-key-vault.id
+  key_vault_id = sensitive(azurerm_key_vault.hro-test-api-key-vault.id)
   tenant_id    = var.azure_ad_tenant_id
-  object_id    = azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id
+  object_id    = sensitive(azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.principal_id)
 
   secret_permissions = [
     "Get",
