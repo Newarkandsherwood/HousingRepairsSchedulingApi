@@ -99,6 +99,7 @@ jobs:
       - name: Setup tfvars
         run: |
           touch env.tfvars
+          echo "azure_ad_tenant_id                      = \"${{ secrets.AZURE_AD_TENANT_ID }}\"" >> env.tfvars
           echo "service_plan_name                         = \"${{ secrets.SERVICE_PLAN_NAME }}\"" >> env.tfvars
           echo "resource_group_name                       = \"${{ secrets.RESOURCE_GROUP_NAME }}\"" >> env.tfvars
           echo "resource_group_location                   = \"${{ secrets.RESOURCE_GROUP_LOCATION }}\"" >> env.tfvars
