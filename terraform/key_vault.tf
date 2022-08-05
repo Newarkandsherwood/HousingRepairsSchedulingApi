@@ -6,6 +6,7 @@ resource "azurerm_key_vault" "hro-test-api-key-vault" {
   soft_delete_retention_days = 7
   purge_protection_enabled   = false
   sku_name                   = "standard"
+  #  depends_on = [key-vault-registration]
 }
 
 resource "azurerm_key_vault_access_policy" "hro-test-api-key-vault-access-policy" {
@@ -17,3 +18,8 @@ resource "azurerm_key_vault_access_policy" "hro-test-api-key-vault-access-policy
     "Get",
   ]
 }
+
+resource "azurerm_resource_provider_registration" "key-vault-registration" {
+  name = "Microsoft.KeyVault"
+}
+
