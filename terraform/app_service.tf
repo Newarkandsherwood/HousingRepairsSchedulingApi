@@ -44,12 +44,12 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
     health_check_path = "/health"
   }
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id]
-  }
+  # identity {
+  #   type         = "UserAssigned"
+  #   identity_ids = [azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id]
+  # }
 
-  key_vault_reference_identity_id = azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id
+  # key_vault_reference_identity_id = azurerm_user_assigned_identity.hro-scheduling-api-vault-access-identity.id
 
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Production"
