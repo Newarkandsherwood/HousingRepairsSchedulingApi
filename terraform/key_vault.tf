@@ -6,7 +6,6 @@ resource "azurerm_key_vault" "hro-scheduling-api-key-vault" {
   soft_delete_retention_days = 7
   purge_protection_enabled   = false
   sku_name                   = "standard"
-  depends_on                 = [azurerm_resource_provider_registration.key-vault-registration]
 }
 
 resource "azurerm_key_vault_access_policy" "hro-scheduling-api-key-vault-access-policy" {
