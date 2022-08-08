@@ -27,7 +27,8 @@ variable "jwt_secret_staging" {
   sensitive = true
 }
 variable "sentry_dsn" {
-  type = string
+  type      = string
+  sensitive = true
 }
 variable "drs_api_address_production" {
   default = ""
