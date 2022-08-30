@@ -141,6 +141,17 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+      - name: Add mask to obscure secrets in debug logs
+        run: |
+          echo "::add-mask::${{ secrets.AUTHENTICATION_IDENTIFIER_STAGING }}"
+          echo "::add-mask::${{ secrets.JWT_SECRET_STAGING }}"
+          echo "::add-mask::${{ secrets.SENTRY_DSN }}"
+          echo "::add-mask::${{ secrets.DRS_API_ADDRESS_STAGING }}"
+          echo "::add-mask::${{ secrets.DRS_LOGIN_STAGING }}"
+          echo "::add-mask::${{ secrets.DRS_PASSWORD_STAGING }}"
+          echo "::add-mask::${{ secrets.DRS_CONTRACT_STAGING }}"
+          echo "::add-mask::${{ secrets.DRS_PRIORITY_STAGING }}"
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:
@@ -163,6 +174,17 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+      - name: Add mask to obscure secrets in debug logs
+        run: |
+          echo "::add-mask::${{ secrets.AUTHENTICATION_IDENTIFIER_PRODUCTION }}"
+          echo "::add-mask::${{ secrets.JWT_SECRET_PRODUCTION }}"
+          echo "::add-mask::${{ secrets.SENTRY_DSN }}"
+          echo "::add-mask::${{ secrets.DRS_API_ADDRESS_PRODUCTION }}"
+          echo "::add-mask::${{ secrets.DRS_LOGIN_PRODUCTION }}"
+          echo "::add-mask::${{ secrets.DRS_PASSWORD_PRODUCTION }}"
+          echo "::add-mask::${{ secrets.DRS_CONTRACT_PRODUCTION }}"
+          echo "::add-mask::${{ secrets.DRS_PRIORITY_PRODUCTION }}"
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
         with:

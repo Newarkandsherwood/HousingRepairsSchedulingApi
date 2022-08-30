@@ -10,14 +10,14 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
 
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Staging"
-    AUTHENTICATION_IDENTIFIER = var.authentication_identifier_staging
-    JWT_SECRET                = var.jwt_secret_staging
-    SENTRY_DSN                = var.sentry_dsn
-    DrsOptions__ApiAddress    = var.drs_api_address_staging
-    DrsOptions__Login         = var.drs_login_staging
-    DrsOptions__Password      = var.drs_password_staging
-    DrsOptions__Contract      = var.drs_contract_staging
-    DrsOptions__Priority      = var.drs_priority_staging
+    AUTHENTICATION_IDENTIFIER = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.authentication-identifier-staging.id})"
+    JWT_SECRET                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.jwt-secret-staging.id})"
+    SENTRY_DSN                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.sentry-dsn.id})"
+    DrsOptions__ApiAddress    = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-api-address-staging.id})"
+    DrsOptions__Login         = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-login-staging.id})"
+    DrsOptions__Password      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-password-staging.id})"
+    DrsOptions__Contract      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-contract-staging.id})"
+    DrsOptions__Priority      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-priority-staging.id})"
   }
 
   identity {
@@ -60,13 +60,13 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
 
   app_settings = {
     ASPNETCORE_ENVIRONMENT    = "Production"
-    AUTHENTICATION_IDENTIFIER = var.authentication_identifier_production
-    JWT_SECRET                = var.jwt_secret_production
-    SENTRY_DSN                = var.sentry_dsn
-    DrsOptions__ApiAddress    = var.drs_api_address_production
-    DrsOptions__Login         = var.drs_login_production
-    DrsOptions__Password      = var.drs_password_production
-    DrsOptions__Contract      = var.drs_contract_production
-    DrsOptions__Priority      = var.drs_priority_production
+    AUTHENTICATION_IDENTIFIER = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.authentication-identifier-production.id})"
+    JWT_SECRET                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.jwt-secret-production.id})"
+    SENTRY_DSN                = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.sentry-dsn.id})"
+    DrsOptions__ApiAddress    = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-api-address-production.id})"
+    DrsOptions__Login         = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-login-production.id})"
+    DrsOptions__Password      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-password-production.id})"
+    DrsOptions__Contract      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-contract-production.id})"
+    DrsOptions__Priority      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-priority-production.id})"
   }
 }
