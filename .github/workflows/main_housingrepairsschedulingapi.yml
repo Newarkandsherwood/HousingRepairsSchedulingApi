@@ -17,15 +17,15 @@ jobs:
     name: Format
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
       - name: Install dotnet format
         run: dotnet tool update --global dotnet-format
       - name: Run dotnet format
-        run: dotnet format --check --verbosity diagnostic
+        run: dotnet format --verify-no-changes --no-restore --severity error
       - name: Setup Terraform
         if: always()
         uses: hashicorp/setup-terraform@v2
@@ -38,11 +38,11 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup .NET
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 6.0.x
       - name: Authenticate nuget
         run: dotnet nuget add source --username ${{ secrets.NUGET_AUTH_GITHUB_USERNAME }} --password ${{ secrets.NUGET_AUTH_GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/City-of-Lincoln-Council/index.json"
       - name: Test
@@ -53,12 +53,12 @@ jobs:
     name: Build Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '5.0.x'
+          dotnet-version: '6.0.x'
           include-prerelease: true
 
       - name: Authenticate nuget
@@ -90,7 +90,7 @@ jobs:
         shell: bash
         working-directory: "./terraform"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
