@@ -1,8 +1,11 @@
 namespace HousingRepairsSchedulingApi.Controllers
 {
     using System;
+    using System.Text.Json;
     using System.Threading.Tasks;
+    using Domain;
     using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json.Linq;
     using Sentry;
     using UseCases;
 
@@ -42,11 +45,12 @@ namespace HousingRepairsSchedulingApi.Controllers
             [FromQuery] string sorCode,
             [FromQuery] string locationId,
             [FromQuery] DateTime startDateTime,
-            [FromQuery] DateTime endDateTime)
+            [FromQuery] DateTime endDateTime,
+            [FromBody] RepairDescription repairDescriptionText)
         {
             try
             {
-                var result = await bookAppointmentUseCase.Execute(bookingReference, sorCode, locationId, startDateTime, endDateTime);
+                var result = await bookAppointmentUseCase.Execute(bookingReference, sorCode, locationId, startDateTime, endDateTime, repairDescriptionText.Text);
 
                 return this.Ok(result);
             }

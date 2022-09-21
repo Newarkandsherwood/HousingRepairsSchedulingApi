@@ -7,12 +7,14 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
 {
     using System;
     using Controllers;
+    using Domain;
     using UseCases;
 
     public class AppointmentsControllerTests : ControllerTests
     {
         private const string SorCode = "SOR Code";
         private const string LocationId = "locationId";
+        RepairDescription orderComments = new RepairDescription{Text = "something"};
         private AppointmentsController systemUndertest;
         private Mock<IRetrieveAvailableAppointmentsUseCase> availableAppointmentsUseCaseMock;
         private Mock<IBookAppointmentUseCase> bookAppointmentUseCaseMock;
@@ -54,8 +56,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             const string bookingReference = "bookingReference";
             var startDateTime = It.IsAny<DateTime>();
             var endDateTime = It.IsAny<DateTime>();
+            RepairDescription orderComment = new RepairDescription{Text = "something"};
 
-            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime);
+            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComment);
             GetStatusCode(result).Should().Be(200);
         }
 
@@ -85,9 +88,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var endDateTime = It.IsAny<DateTime>();
 
             const string errorMessage = "An error message";
-            this.bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).Throws(new Exception(errorMessage));
+            this.bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
 
-            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime);
+            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
 
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);

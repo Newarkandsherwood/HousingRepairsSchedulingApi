@@ -20,6 +20,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
         private const string LocationId = "LocationId";
         private const string BookingReference = "BookingReference";
         private const int BookingId = 12345;
+        private const string orderComments = "ordercomment";
 
         private Mock<SOAP> soapMock;
 
@@ -190,7 +191,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.CreateOrder(bookingReference, It.IsAny<string>(), It.IsAny<string>());
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(bookingReference, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -208,7 +209,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, sorCode, It.IsAny<string>());
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, sorCode, It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -226,7 +227,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, SorCode, locationId);
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, SorCode, locationId, orderComments);
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -245,7 +246,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            var actual = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId);
+            var actual = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId, orderComments);
 
             // Assert
             Assert.Equal(BookingId, actual);
@@ -359,7 +360,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId);
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId,orderComments);
 
             // Assert
             actualContract.Should().NotBeNull();
@@ -435,7 +436,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId);
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId, orderComments);
 
             // Assert
             actualPriority.Should().NotBeNull();
