@@ -241,7 +241,8 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             this.soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
                 .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
                 {
-                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }
+                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } },
+                    status = responseStatus.success,
                 }));
 
             // Act
@@ -355,7 +356,8 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 .Callback<createOrder>(request => actualContract = request.createOrder1.theOrder.contract)
                 .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
                 {
-                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }
+                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } },
+                    status = responseStatus.success,
                 }));
 
             // Act
@@ -431,7 +433,8 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 .Callback<createOrder>(request => actualPriority = request.createOrder1.theOrder.priority)
                 .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
                 {
-                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }
+                    theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } },
+                    status = responseStatus.success,
                 }));
 
             // Act

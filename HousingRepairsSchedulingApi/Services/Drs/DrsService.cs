@@ -107,7 +107,12 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             };
 
             var createOrderResponse = await drsSoapClient.createOrderAsync(new createOrder(createOrder));
-            var result = createOrderResponse.@return.theOrder.theBookings[0].bookingId;
+            var xmbCreateOrderResponse = createOrderResponse.@return;
+            if (xmbCreateOrderResponse.status != responseStatus.success)
+            {
+                throw new Exception($"{xmbCreateOrderResponse.status}: {xmbCreateOrderResponse.errorMsg}");
+            }
+            var result = xmbCreateOrderResponse.theOrder.theBookings[0].bookingId;
 
             return result;
         }
