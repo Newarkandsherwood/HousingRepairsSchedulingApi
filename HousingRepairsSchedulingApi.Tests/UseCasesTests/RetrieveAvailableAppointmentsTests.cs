@@ -86,7 +86,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             const string uprn = "uprn";
             const string locationId = "locationId";
             await sytemUndertest.Execute("uprn", "locationId");
-            appointmentsGatewayMock.Verify(x => x.GetAvailableAppointments(uprn, locationId, null), Times.Once);
+            appointmentsGatewayMock.Verify(x => x.GetAvailableAppointments(uprn, locationId, null, null), Times.Once);
         }
     }
 }
