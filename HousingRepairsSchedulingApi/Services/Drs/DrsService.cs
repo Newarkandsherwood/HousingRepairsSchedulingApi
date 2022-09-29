@@ -33,7 +33,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
             var checkAvailability = new xmbCheckAvailability
             {
-                sessionId = this.sessionId,
+                sessionId = sessionId,
                 periodBegin = earliestDate,
                 periodBeginSpecified = true,
                 periodEnd = earliestDate.AddDays(drsOptions.Value.SearchTimeSpanInDays - 1),
@@ -56,7 +56,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 }
             };
 
-            var checkAvailabilityResponse = await this.drsSoapClient.checkAvailabilityAsync(new checkAvailability(checkAvailability));
+            var checkAvailabilityResponse = await drsSoapClient.checkAvailabilityAsync(new checkAvailability(checkAvailability));
 
             var appointmentSlots = checkAvailabilityResponse.@return.theSlots
                 .Where(x => x.slotsForDay != null)
@@ -83,7 +83,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
             var createOrder = new xmbCreateOrder
             {
-                sessionId = this.sessionId,
+                sessionId = sessionId,
                 theOrder = new order
                 {
                     contract = drsOptions.Value.Contract,
@@ -132,7 +132,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 }
             };
 
-            _ = await this.drsSoapClient.scheduleBookingAsync(new scheduleBooking(scheduleBooking));
+            _ = await drsSoapClient.scheduleBookingAsync(new scheduleBooking(scheduleBooking));
         }
 
         private async Task OpenSession()
@@ -142,14 +142,14 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 login = drsOptions.Value.Login,
                 password = drsOptions.Value.Password
             };
-            var response = await this.drsSoapClient.openSessionAsync(new openSession(xmbOpenSession));
+            var response = await drsSoapClient.openSessionAsync(new openSession(xmbOpenSession));
 
             sessionId = response.@return.sessionId;
         }
 
         private async Task EnsureSessionOpened()
         {
-            if (this.sessionId == null)
+            if (sessionId == null)
             {
                 await OpenSession();
             }

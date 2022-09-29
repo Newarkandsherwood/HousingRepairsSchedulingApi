@@ -238,7 +238,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 #pragma warning restore CA1707
         {
             // Arrange
-            this.soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
+            soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
                 .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
                 {
                     theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }

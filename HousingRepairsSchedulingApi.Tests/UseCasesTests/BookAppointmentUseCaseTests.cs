@@ -108,7 +108,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
 #pragma warning restore CA1707
         {
             // Arrange
-            this.appointmentsGatewayMock.Setup(x => x.BookAppointment(
+            appointmentsGatewayMock.Setup(x => x.BookAppointment(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
