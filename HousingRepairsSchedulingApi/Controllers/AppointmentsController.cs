@@ -1,7 +1,9 @@
 namespace HousingRepairsSchedulingApi.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
+    using Domain;
     using Microsoft.AspNetCore.Mvc;
     using Sentry;
     using UseCases;
@@ -22,11 +24,11 @@ namespace HousingRepairsSchedulingApi.Controllers
 
         [HttpGet]
         [Route("AvailableAppointments")]
-        public async Task<IActionResult> AvailableAppointments([FromQuery] string sorCode, [FromQuery] string locationId, [FromQuery] DateTime? fromDate = null)
+        public async Task<IActionResult> AvailableAppointments([FromQuery] string sorCode, [FromQuery] string locationId, [FromQuery] DateTime? fromDate = null, [FromBody] IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             try
             {
-                var result = await retrieveAvailableAppointmentsUseCase.Execute(sorCode, locationId, fromDate);
+                var result = await retrieveAvailableAppointmentsUseCase.Execute(sorCode, locationId, fromDate, allowedAppointmentSlots);
                 return Ok(result);
             }
             catch (Exception ex)
