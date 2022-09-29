@@ -42,9 +42,14 @@ namespace HousingRepairsSchedulingApi.Gateways
             {
                 new { StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0) },
                 new { StartTime = new TimeSpan(12, 0, 0), EndTime = new TimeSpan(16, 0, 0) },
-                new { StartTime = new TimeSpan(7, 0, 0), EndTime = new TimeSpan(11, 0, 0) },
-                new { StartTime = new TimeSpan(11, 0, 0), EndTime = new TimeSpan(15, 0, 0) },
             };
+
+            var dayLightSavingsTimeAdjustedDesiredAppointmentSlots = desiredAppointmentSlots.Select(x => new
+            {
+                StartTime = x.StartTime.Add(TimeSpan.FromHours(-1)), EndTime = x.EndTime.Add(TimeSpan.FromHours(-1))
+            });
+            var combinedDesiredAppointmentSlots =
+                desiredAppointmentSlots.Concat(dayLightSavingsTimeAdjustedDesiredAppointmentSlots);
 
             var earliestDate = fromDate ?? DateTime.Today.AddDays(appointmentLeadTimeInDays);
             var appointmentSlots = Enumerable.Empty<AppointmentSlot>();
@@ -54,7 +59,7 @@ namespace HousingRepairsSchedulingApi.Gateways
             {
                 numberOfRequests++;
                 var appointments = await drsService.CheckAvailability(sorCode, locationId, earliestDate);
-                appointments = appointments.Where(x => desiredAppointmentSlots.Any(slot =>
+                appointments = appointments.Where(x => combinedDesiredAppointmentSlots.Any(slot =>
                     slot.StartTime == x.StartTime.TimeOfDay && slot.EndTime == x.EndTime.TimeOfDay)
                 );
                 appointmentSlots = appointmentSlots.Concat(appointments);
