@@ -38,6 +38,14 @@ namespace HousingRepairsSchedulingApi.Gateways
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
 
+            var desiredAppointmentSlots = new []
+            {
+                new { StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0) },
+                new { StartTime = new TimeSpan(12, 0, 0), EndTime = new TimeSpan(16, 0, 0) },
+                new { StartTime = new TimeSpan(7, 0, 0), EndTime = new TimeSpan(11, 0, 0) },
+                new { StartTime = new TimeSpan(11, 0, 0), EndTime = new TimeSpan(15, 0, 0) },
+            };
+
             var earliestDate = fromDate ?? DateTime.Today.AddDays(appointmentLeadTimeInDays);
             var appointmentSlots = Enumerable.Empty<AppointmentSlot>();
 
@@ -46,15 +54,8 @@ namespace HousingRepairsSchedulingApi.Gateways
             {
                 numberOfRequests++;
                 var appointments = await drsService.CheckAvailability(sorCode, locationId, earliestDate);
-                appointments = appointments.Where(x =>
-                    !(x.StartTime.Hour == 9 && x.EndTime.Minute == 30
-                      && x.EndTime.Hour == 14 && x.EndTime.Minute == 30) &&
-                    !(x.StartTime.Hour == 8 && x.EndTime.Minute == 0
-                                            && x.EndTime.Hour == 16 && x.EndTime.Minute == 0) &&
-                    !(x.StartTime.Hour == 8 && x.EndTime.Minute == 30
-                                            && x.EndTime.Hour == 13 && x.EndTime.Minute == 30) &&
-                    !(x.StartTime.Hour == 7 && x.EndTime.Minute == 0
-                                            && x.EndTime.Hour == 15 && x.EndTime.Minute == 0)
+                appointments = appointments.Where(x => desiredAppointmentSlots.Any(slot =>
+                    slot.StartTime == x.StartTime.TimeOfDay && slot.EndTime == x.EndTime.TimeOfDay)
                 );
                 appointmentSlots = appointmentSlots.Concat(appointments);
                 earliestDate = earliestDate.AddDays(appointmentSearchTimeSpanInDays);
