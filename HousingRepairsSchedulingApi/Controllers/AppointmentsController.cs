@@ -27,7 +27,7 @@ namespace HousingRepairsSchedulingApi.Controllers
             try
             {
                 var result = await retrieveAvailableAppointmentsUseCase.Execute(sorCode, locationId, fromDate);
-                return this.Ok(result);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -48,7 +48,7 @@ namespace HousingRepairsSchedulingApi.Controllers
             {
                 var result = await bookAppointmentUseCase.Execute(bookingReference, sorCode, locationId, startDateTime, endDateTime);
 
-                return this.Ok(result);
+                return Ok(result);
             }
             catch (Exception ex)
             {

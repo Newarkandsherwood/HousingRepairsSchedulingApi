@@ -27,7 +27,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
         public DrsAppointmentGatewayTests()
         {
             systemUnderTest = new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 RequiredNumberOfAppointmentDays,
                 AppointmentSearchTimeSpanInDays,
                 AppointmentLeadTimeInDays, MaximumNumberOfRequests);
@@ -63,7 +63,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 invalidRequiredNumberOfAppointments,
                 default,
                 default,
@@ -82,7 +82,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 1,
                 -1,
@@ -103,7 +103,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 invalidAppointmentSearchTimeSpanInDays,
                 default,
@@ -124,7 +124,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 1,
                 default,
@@ -380,7 +380,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var locationId = "locationId";
 
             systemUnderTest = new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 AppointmentSearchTimeSpanInDays,
                 AppointmentLeadTimeInDays, int.MaxValue);
@@ -423,7 +423,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var locationId = "locationId";
 
             systemUnderTest = new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 AppointmentSearchTimeSpanInDays,
                 AppointmentLeadTimeInDays, 1);
