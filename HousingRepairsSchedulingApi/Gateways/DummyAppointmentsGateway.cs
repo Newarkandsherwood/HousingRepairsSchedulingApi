@@ -8,7 +8,7 @@ namespace HousingRepairsSchedulingApi.Gateways
 
     public class DummyAppointmentsGateway : IAppointmentsGateway
     {
-        public async Task<IEnumerable<AppointmentSlot>> GetAvailableAppointments(string sorCode, string locationId, DateTime? fromDate = null)
+        public async Task<IEnumerable<AppointmentSlot>> GetAvailableAppointments(string sorCode, string locationId, DateTime? fromDate = null, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             var dateTime = (fromDate ?? DateTime.Today).Date;
             List<AppointmentSlot> unorderedAppointments = new List<AppointmentSlot>

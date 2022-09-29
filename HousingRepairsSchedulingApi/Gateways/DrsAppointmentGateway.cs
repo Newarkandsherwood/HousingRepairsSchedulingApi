@@ -33,23 +33,24 @@ namespace HousingRepairsSchedulingApi.Gateways
         }
 
         public async Task<IEnumerable<AppointmentSlot>> GetAvailableAppointments(string sorCode, string locationId,
-            DateTime? fromDate = null)
+            DateTime? fromDate = null, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
 
-            var desiredAppointmentSlots = new []
-            {
-                new { StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0) },
-                new { StartTime = new TimeSpan(12, 0, 0), EndTime = new TimeSpan(16, 0, 0) },
-            };
+            var desiredAppointmentSlots = allowedAppointmentSlots;
 
-            var dayLightSavingsTimeAdjustedDesiredAppointmentSlots = desiredAppointmentSlots.Select(x => new
+            if (allowedAppointmentSlots != null)
             {
-                StartTime = x.StartTime.Add(TimeSpan.FromHours(-1)), EndTime = x.EndTime.Add(TimeSpan.FromHours(-1))
-            });
-            var combinedDesiredAppointmentSlots =
-                desiredAppointmentSlots.Concat(dayLightSavingsTimeAdjustedDesiredAppointmentSlots);
+                var dayLightSavingsTimeAdjustedDesiredAppointmentSlots = allowedAppointmentSlots.Select(x =>
+                    new AppointmentSlotTimeSpan
+                    {
+                        StartTime = x.StartTime.Add(TimeSpan.FromHours(-1)),
+                        EndTime = x.EndTime.Add(TimeSpan.FromHours(-1))
+                    });
+                desiredAppointmentSlots =
+                    desiredAppointmentSlots.Concat(dayLightSavingsTimeAdjustedDesiredAppointmentSlots);
+            }
 
             var earliestDate = fromDate ?? DateTime.Today.AddDays(appointmentLeadTimeInDays);
             var appointmentSlots = Enumerable.Empty<AppointmentSlot>();
@@ -59,7 +60,7 @@ namespace HousingRepairsSchedulingApi.Gateways
             {
                 numberOfRequests++;
                 var appointments = await drsService.CheckAvailability(sorCode, locationId, earliestDate);
-                appointments = appointments.Where(x => combinedDesiredAppointmentSlots.Any(slot =>
+                appointments = appointments.Where(x => desiredAppointmentSlots == null || desiredAppointmentSlots.Any(slot =>
                     slot.StartTime == x.StartTime.TimeOfDay && slot.EndTime == x.EndTime.TimeOfDay)
                 );
                 appointmentSlots = appointmentSlots.Concat(appointments);
