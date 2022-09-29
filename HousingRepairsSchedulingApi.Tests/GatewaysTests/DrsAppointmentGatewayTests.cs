@@ -413,7 +413,52 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
         }
 
         [Theory]
-        [MemberData(nameof(TimeZoneOffsetTestData))]
+        [MemberData(nameof(TimeZoneOffsetDesiredTestData))]
+#pragma warning disable CA1707
+        public async void GivenDrsServiceHasAvailableAppointmentsThatAreRequiredDueToTimeZoneOffset_WhenGettingAvailableAppointments_ThenTheyAreNotFilteredOutOfAppointmentsThatAreReturned(AppointmentSlot requiredAppointmentSlot)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var sorCode = "sorCode";
+            var locationId = "locationId";
+
+            systemUnderTest = new DrsAppointmentGateway(
+                drsServiceMock.Object,
+                1,
+                AppointmentSearchTimeSpanInDays,
+                AppointmentLeadTimeInDays, 1);
+
+            drsServiceMock.SetupSequence(x => x.CheckAvailability(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTime>()))
+                .ReturnsAsync(new[] { requiredAppointmentSlot });
+
+            // Act
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+
+            // Assert
+            actualAppointments.Should().HaveCount(1);
+            actualAppointments.Single().Should().BeEquivalentTo(requiredAppointmentSlot);
+        }
+
+        public static TheoryData<AppointmentSlot> TimeZoneOffsetDesiredTestData() =>
+            new()
+            {
+                new AppointmentSlot
+                {
+                    StartTime = new DateTime(2022, 3, 30, 7, 0, 0, DateTimeKind.Utc),
+                    EndTime = new DateTime(2022, 3, 30, 11, 0, 0, DateTimeKind.Utc)
+                },
+                new AppointmentSlot
+                {
+                    StartTime = new DateTime(2022, 3, 30, 11, 00, 0, DateTimeKind.Utc),
+                    EndTime = new DateTime(2022, 3, 30, 15, 00, 0, DateTimeKind.Utc)
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(TimeZoneOffsetUndesiredTestData))]
 #pragma warning disable CA1707
         public async void GivenDrsServiceHasAvailableAppointmentsThatAreNotRequiredDueToTimeZoneOffset_WhenGettingAvailableAppointments_ThenTheyAreFilteredOutOfAppointmentsThatAreReturned(AppointmentSlot unrequiredAppointmentSlot)
 #pragma warning restore CA1707
@@ -441,7 +486,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             actualAppointments.Should().BeEmpty();
         }
 
-        public static IEnumerable<object[]> TimeZoneOffsetTestData()
+        public static IEnumerable<object[]> TimeZoneOffsetUndesiredTestData()
         {
             yield return new object[]
             {
