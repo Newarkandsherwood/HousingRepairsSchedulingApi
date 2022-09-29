@@ -31,7 +31,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
             var result = await systemUndertest.AvailableAppointments(SorCode, LocationId);
             GetStatusCode(result).Should().Be(200);
-            availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, LocationId, null), Times.Once);
+            availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, LocationId, null, null), Times.Once);
         }
 
 
@@ -40,7 +40,8 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
 
             const string errorMessage = "An error message";
-            availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), null)).Throws(new Exception(errorMessage));
+            availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), null, null))
+                .Throws(new Exception(errorMessage));
 
             var result = await systemUndertest.AvailableAppointments(SorCode, LocationId);
 
@@ -74,7 +75,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
 
             // Assert
             GetStatusCode(result).Should().Be(200);
-            availableAppointmentsUseCaseMock.Verify(x => x.Execute(sorCode, locationId, fromDate), Times.Once);
+            availableAppointmentsUseCaseMock.Verify(x => x.Execute(sorCode, locationId, fromDate, null), Times.Once);
         }
 
         [Fact]
