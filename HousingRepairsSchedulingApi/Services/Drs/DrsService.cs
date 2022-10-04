@@ -6,6 +6,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
     using System.Threading.Tasks;
     using Ardalis.GuardClauses;
     using Domain;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     public class DrsService : IDrsService
@@ -15,16 +16,18 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
         private readonly SOAP drsSoapClient;
         private readonly IOptions<DrsOptions> drsOptions;
+        private readonly ILogger<DrsService> logger;
 
         private string sessionId;
 
-        public DrsService(SOAP drsSoapClient, IOptions<DrsOptions> drsOptions)
+        public DrsService(SOAP drsSoapClient, IOptions<DrsOptions> drsOptions, ILogger<DrsService> logger)
         {
             Guard.Against.Null(drsSoapClient, nameof(drsSoapClient));
             Guard.Against.Null(drsOptions, nameof(drsOptions));
 
             this.drsSoapClient = drsSoapClient;
             this.drsOptions = drsOptions;
+            this.logger = logger;
         }
 
         public async Task<IEnumerable<AppointmentSlot>> CheckAvailability(string sorCode, string locationId, DateTime earliestDate)
@@ -65,6 +68,11 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             if (nonSuccessResponseStatuses.Contains(xmbCheckAvailabilityResponse.status))
             {
                 appointmentSlots = Enumerable.Empty<AppointmentSlot>();
+
+                logger.LogInformation(
+                    "DRS checkAvailability request unsuccessful (Response status: {Status};Error message: {ErrorMsg})",
+                    xmbCheckAvailabilityResponse.status,
+                    xmbCheckAvailabilityResponse.errorMsg);
             }
             else
             {
