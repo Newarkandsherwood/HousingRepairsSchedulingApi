@@ -180,6 +180,39 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
         }
 
         [Theory]
+        [MemberData(nameof(NonSuccessResponseStatuses))]
+#pragma warning disable CA1707
+        public async void GivenDrsCheckAvailabilityResponseDoesNotHaveSuccessStatus_WhenCheckingAvailability_ThenNoAppointmentsAreReturned(responseStatus status)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            soapMock.Setup(x => x.checkAvailabilityAsync(It.IsAny<checkAvailability>()))
+                .ReturnsAsync(new checkAvailabilityResponse(
+                    new xmbCheckAvailabilityResponse { status = status }));
+            var searchDate = new DateTime(2022, 1, 1);
+
+            // Act
+            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
+
+            // Assert
+            appointmentSlots.Should().BeEmpty();
+        }
+
+        public static TheoryData<responseStatus> NonSuccessResponseStatuses()
+        {
+            var responseStatuses = Enum.GetValues<responseStatus>();
+            var nonSuccessResponseStatuses = responseStatuses.Where(x => x != responseStatus.success);
+
+            var result = new TheoryData<responseStatus>();
+            foreach (var nonSuccessResponseStatus in nonSuccessResponseStatuses)
+            {
+                result.Add(nonSuccessResponseStatus);
+            }
+            return result;
+
+        }
+
+        [Theory]
         [MemberData(nameof(InvalidArgumentTestData))]
 #pragma warning disable xUnit1026
 #pragma warning disable CA1707
