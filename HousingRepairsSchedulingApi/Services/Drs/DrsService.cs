@@ -58,17 +58,28 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
             var checkAvailabilityResponse = await drsSoapClient.checkAvailabilityAsync(new checkAvailability(checkAvailability));
 
-            var appointmentSlots = checkAvailabilityResponse.@return.theSlots
-                .Where(x => x.slotsForDay != null)
-                .SelectMany(x =>
-                    x.slotsForDay.Where(y => y.available == availableValue.YES).Select(y =>
-                        new AppointmentSlot
-                        {
-                            StartTime = y.beginDate,
-                            EndTime = y.endDate,
-                        }
-                    )
-            );
+            IEnumerable<AppointmentSlot> appointmentSlots;
+            var xmbCheckAvailabilityResponse = checkAvailabilityResponse.@return;
+            var responseStatuses = Enum.GetValues<responseStatus>();
+            var nonSuccessResponseStatuses = responseStatuses.Where(x => x != responseStatus.success);
+            if (nonSuccessResponseStatuses.Contains(xmbCheckAvailabilityResponse.status))
+            {
+                appointmentSlots = Enumerable.Empty<AppointmentSlot>();
+            }
+            else
+            {
+                appointmentSlots = xmbCheckAvailabilityResponse.theSlots
+                    .Where(x => x.slotsForDay != null)
+                    .SelectMany(x =>
+                        x.slotsForDay.Where(y => y.available == availableValue.YES).Select(y =>
+                            new AppointmentSlot
+                            {
+                                StartTime = y.beginDate,
+                                EndTime = y.endDate,
+                            }
+                        )
+                    );
+            }
 
             return appointmentSlots;
         }
