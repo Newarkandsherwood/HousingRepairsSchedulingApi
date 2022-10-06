@@ -6,6 +6,7 @@ namespace HousingRepairsSchedulingApi.Gateways
     using System.Threading.Tasks;
     using Ardalis.GuardClauses;
     using Domain;
+    using Helpers;
     using Services.Drs;
 
     public class DrsAppointmentGateway : IAppointmentsGateway
@@ -83,7 +84,9 @@ namespace HousingRepairsSchedulingApi.Gateways
 
             var bookingId = await drsService.CreateOrder(bookingReference, sorCode, locationId);
 
-            await drsService.ScheduleBooking(bookingReference, bookingId, startDateTime, endDateTime);
+            var convertedStartTime = DrsHelpers.ConvertToDrsTimeZone(startDateTime);
+            var convertedEndTime = DrsHelpers.ConvertToDrsTimeZone(endDateTime);
+            await drsService.ScheduleBooking(bookingReference, bookingId, convertedStartTime, convertedEndTime);
 
             return bookingReference;
         }
