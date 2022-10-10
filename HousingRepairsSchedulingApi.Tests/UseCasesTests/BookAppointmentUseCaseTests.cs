@@ -81,6 +81,23 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
         }
 
         [Fact]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenAnInvalidOrderComments_WhenExecute_ThenExceptionIsThrown()
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+            var orderComments =
+                "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,.";
+            // Act
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, LocationId,
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), orderComments);
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
 #pragma warning disable CA1707
         public async void GivenAnEndDateEarlierThanTheStartDate_WhenExecute_ThenInvalidExceptionIsThrown()
 #pragma warning restore CA1707

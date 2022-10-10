@@ -4,7 +4,6 @@ namespace HousingRepairsSchedulingApi.UseCases
     using System.Threading.Tasks;
     using Ardalis.GuardClauses;
     using Gateways;
-    using Helpers;
 
     public class BookAppointmentUseCase : IBookAppointmentUseCase
     {
@@ -23,8 +22,7 @@ namespace HousingRepairsSchedulingApi.UseCases
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
             Guard.Against.NullOrWhiteSpace(orderComments, nameof(orderComments));
             Guard.Against.OutOfRange(endDateTime, nameof(endDateTime), startDateTime, DateTime.MaxValue);
-
-            Helper.VerifyLengthIsUnder255Characters(orderComments);
+            Guard.Against.OutOfRange(orderComments.Length, nameof(orderComments), 0, 255);
 
             var result = appointmentsGateway.BookAppointment(bookingReference, sorCode, locationId,
                 startDateTime, endDateTime, orderComments);
