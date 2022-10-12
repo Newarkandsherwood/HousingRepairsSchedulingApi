@@ -6,6 +6,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
     using System.Threading.Tasks;
     using Ardalis.GuardClauses;
     using Domain;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
 
     public class DrsService : IDrsService
@@ -15,16 +16,18 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
         private readonly SOAP drsSoapClient;
         private readonly IOptions<DrsOptions> drsOptions;
+        private readonly ILogger<DrsService> logger;
 
         private string sessionId;
 
-        public DrsService(SOAP drsSoapClient, IOptions<DrsOptions> drsOptions)
+        public DrsService(SOAP drsSoapClient, IOptions<DrsOptions> drsOptions, ILogger<DrsService> logger)
         {
             Guard.Against.Null(drsSoapClient, nameof(drsSoapClient));
             Guard.Against.Null(drsOptions, nameof(drsOptions));
 
             this.drsSoapClient = drsSoapClient;
             this.drsOptions = drsOptions;
+            this.logger = logger;
         }
 
         public async Task<IEnumerable<AppointmentSlot>> CheckAvailability(string sorCode, string locationId, DateTime earliestDate)
@@ -33,7 +36,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
             var checkAvailability = new xmbCheckAvailability
             {
-                sessionId = this.sessionId,
+                sessionId = sessionId,
                 periodBegin = earliestDate,
                 periodBeginSpecified = true,
                 periodEnd = earliestDate.AddDays(drsOptions.Value.SearchTimeSpanInDays - 1),
@@ -56,19 +59,35 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 }
             };
 
-            var checkAvailabilityResponse = await this.drsSoapClient.checkAvailabilityAsync(new checkAvailability(checkAvailability));
+            var checkAvailabilityResponse = await drsSoapClient.checkAvailabilityAsync(new checkAvailability(checkAvailability));
 
-            var appointmentSlots = checkAvailabilityResponse.@return.theSlots
-                .Where(x => x.slotsForDay != null)
-                .SelectMany(x =>
-                    x.slotsForDay.Where(y => y.available == availableValue.YES).Select(y =>
-                        new AppointmentSlot
-                        {
-                            StartTime = y.beginDate,
-                            EndTime = y.endDate,
-                        }
-                    )
-            );
+            IEnumerable<AppointmentSlot> appointmentSlots;
+            var xmbCheckAvailabilityResponse = checkAvailabilityResponse.@return;
+            var responseStatuses = Enum.GetValues<responseStatus>();
+            var nonSuccessResponseStatuses = responseStatuses.Where(x => x != responseStatus.success);
+            if (nonSuccessResponseStatuses.Contains(xmbCheckAvailabilityResponse.status))
+            {
+                appointmentSlots = Enumerable.Empty<AppointmentSlot>();
+
+                logger.LogInformation(
+                    "DRS checkAvailability request unsuccessful (Response status: {Status};Error message: {ErrorMsg})",
+                    xmbCheckAvailabilityResponse.status,
+                    xmbCheckAvailabilityResponse.errorMsg);
+            }
+            else
+            {
+                appointmentSlots = xmbCheckAvailabilityResponse.theSlots
+                    .Where(x => x.slotsForDay != null)
+                    .SelectMany(x =>
+                        x.slotsForDay.Where(y => y.available == availableValue.YES).Select(y =>
+                            new AppointmentSlot
+                            {
+                                StartTime = y.beginDate,
+                                EndTime = y.endDate,
+                            }
+                        )
+                    );
+            }
 
             return appointmentSlots;
         }
@@ -83,7 +102,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
 
             var createOrder = new xmbCreateOrder
             {
-                sessionId = this.sessionId,
+                sessionId = sessionId,
                 theOrder = new order
                 {
                     contract = drsOptions.Value.Contract,
@@ -132,7 +151,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 }
             };
 
-            _ = await this.drsSoapClient.scheduleBookingAsync(new scheduleBooking(scheduleBooking));
+            _ = await drsSoapClient.scheduleBookingAsync(new scheduleBooking(scheduleBooking));
         }
 
         private async Task OpenSession()
@@ -142,14 +161,14 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 login = drsOptions.Value.Login,
                 password = drsOptions.Value.Password
             };
-            var response = await this.drsSoapClient.openSessionAsync(new openSession(xmbOpenSession));
+            var response = await drsSoapClient.openSessionAsync(new openSession(xmbOpenSession));
 
             sessionId = response.@return.sessionId;
         }
 
         private async Task EnsureSessionOpened()
         {
-            if (this.sessionId == null)
+            if (sessionId == null)
             {
                 await OpenSession();
             }

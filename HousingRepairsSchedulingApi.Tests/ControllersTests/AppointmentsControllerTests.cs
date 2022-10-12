@@ -23,7 +23,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
             availableAppointmentsUseCaseMock = new Mock<IRetrieveAvailableAppointmentsUseCase>();
             bookAppointmentUseCaseMock = new Mock<IBookAppointmentUseCase>();
-            this.systemUndertest = new AppointmentsController(
+            systemUndertest = new AppointmentsController(
                 availableAppointmentsUseCaseMock.Object,
                 bookAppointmentUseCaseMock.Object);
         }
@@ -31,9 +31,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         [Fact]
         public async Task TestAvailableAppointmentsEndpoint()
         {
-            var result = await this.systemUndertest.AvailableAppointments(SorCode, LocationId);
+            var result = await systemUndertest.AvailableAppointments(SorCode, LocationId);
             GetStatusCode(result).Should().Be(200);
-            availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, LocationId, null), Times.Once);
+            availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, LocationId, null, null), Times.Once);
         }
 
 
@@ -42,9 +42,10 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
 
             const string errorMessage = "An error message";
-            this.availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), null)).Throws(new Exception(errorMessage));
+            availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), null, null))
+                .Throws(new Exception(errorMessage));
 
-            var result = await this.systemUndertest.AvailableAppointments(SorCode, LocationId);
+            var result = await systemUndertest.AvailableAppointments(SorCode, LocationId);
 
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);
@@ -58,6 +59,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var endDateTime = It.IsAny<DateTime>();
 
             var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+
             GetStatusCode(result).Should().Be(200);
         }
 
@@ -72,11 +74,11 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var fromDate = new DateTime(2021, 12, 15);
 
             // Act
-            var result = await this.systemUndertest.AvailableAppointments(sorCode, locationId, fromDate);
+            var result = await systemUndertest.AvailableAppointments(sorCode, locationId, fromDate);
 
             // Assert
             GetStatusCode(result).Should().Be(200);
-            availableAppointmentsUseCaseMock.Verify(x => x.Execute(sorCode, locationId, fromDate), Times.Once);
+            availableAppointmentsUseCaseMock.Verify(x => x.Execute(sorCode, locationId, fromDate, null), Times.Once);
         }
 
         [Fact]
@@ -87,9 +89,10 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var endDateTime = It.IsAny<DateTime>();
 
             const string errorMessage = "An error message";
-            this.bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
 
-            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+            bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
+
+            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
 
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);

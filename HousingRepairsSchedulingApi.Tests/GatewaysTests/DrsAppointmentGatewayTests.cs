@@ -16,6 +16,12 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
     {
         private Mock<IDrsService> drsServiceMock = new();
         private DrsAppointmentGateway systemUnderTest;
+
+        private AppointmentSlotTimeSpan[] allowedAppointmentSlots = {
+            new() { StartTime = new TimeSpan(8, 0, 0), EndTime = new TimeSpan(12, 0, 0) },
+            new() { StartTime = new TimeSpan(12, 0, 0), EndTime = new TimeSpan(16, 0, 0) },
+        };
+
         private const int RequiredNumberOfAppointmentDays = 5;
         private const int AppointmentSearchTimeSpanInDays = 14;
         private const int AppointmentLeadTimeInDays = 0;
@@ -28,7 +34,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
         public DrsAppointmentGatewayTests()
         {
             systemUnderTest = new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 RequiredNumberOfAppointmentDays,
                 AppointmentSearchTimeSpanInDays,
                 AppointmentLeadTimeInDays, MaximumNumberOfRequests);
@@ -64,7 +70,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 invalidRequiredNumberOfAppointments,
                 default,
                 default,
@@ -83,7 +89,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 1,
                 -1,
@@ -104,7 +110,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 invalidAppointmentSearchTimeSpanInDays,
                 default,
@@ -125,7 +131,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<DrsAppointmentGateway> act = () => new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 1,
                 default,
@@ -194,6 +200,45 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Assert
             await act.Should().NotThrowAsync<NullReferenceException>();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenNullAllowedAppointmentSlots_WhenGettingAvailableAppointments_ThenNoExceptionIsThrown()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var sorCode = "sorCode";
+            var locationId = "locationId";
+            drsServiceMock.Setup(x => x.CheckAvailability(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTime>())).ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5));
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: null);
+
+            // Assert
+            await act.Should().NotThrowAsync<NullReferenceException>();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenNullAllowedAppointmentSlots_WhenGettingAvailableAppointments_ThenAllAppointmentsAreReturned()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var sorCode = "sorCode";
+            var locationId = "locationId";
+            var appointmentsForSequentialDays = CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5);
+            drsServiceMock.Setup(x => x.CheckAvailability(It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<DateTime>())).ReturnsAsync(appointmentsForSequentialDays);
+
+            // Act
+            var actual = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: null);
+
+            // Assert
+            actual.Should().BeEquivalentTo(appointmentsForSequentialDays);
         }
 
         [Theory]
@@ -381,7 +426,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var locationId = "locationId";
 
             systemUnderTest = new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 AppointmentSearchTimeSpanInDays,
                 AppointmentLeadTimeInDays, int.MaxValue);
@@ -407,14 +452,59 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 };
 
             // Act
-            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: allowedAppointmentSlots);
 
             // Assert
             actualAppointments.Should().BeEquivalentTo(expected);
         }
 
         [Theory]
-        [MemberData(nameof(TimeZoneOffsetTestData))]
+        [MemberData(nameof(TimeZoneOffsetDesiredTestData))]
+#pragma warning disable CA1707
+        public async void GivenDrsServiceHasAvailableAppointmentsThatAreRequiredDueToTimeZoneOffset_WhenGettingAvailableAppointments_ThenTheyAreNotFilteredOutOfAppointmentsThatAreReturned(AppointmentSlot requiredAppointmentSlot)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var sorCode = "sorCode";
+            var locationId = "locationId";
+
+            systemUnderTest = new DrsAppointmentGateway(
+                drsServiceMock.Object,
+                1,
+                AppointmentSearchTimeSpanInDays,
+                AppointmentLeadTimeInDays, 1);
+
+            drsServiceMock.SetupSequence(x => x.CheckAvailability(
+                    It.IsAny<string>(),
+                    It.IsAny<string>(),
+                    It.IsAny<DateTime>()))
+                .ReturnsAsync(new[] { requiredAppointmentSlot });
+
+            // Act
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+
+            // Assert
+            actualAppointments.Should().HaveCount(1);
+            actualAppointments.Single().Should().BeEquivalentTo(requiredAppointmentSlot);
+        }
+
+        public static TheoryData<AppointmentSlot> TimeZoneOffsetDesiredTestData() =>
+            new()
+            {
+                new AppointmentSlot
+                {
+                    StartTime = new DateTime(2022, 3, 30, 7, 0, 0, DateTimeKind.Utc),
+                    EndTime = new DateTime(2022, 3, 30, 11, 0, 0, DateTimeKind.Utc)
+                },
+                new AppointmentSlot
+                {
+                    StartTime = new DateTime(2022, 3, 30, 11, 00, 0, DateTimeKind.Utc),
+                    EndTime = new DateTime(2022, 3, 30, 15, 00, 0, DateTimeKind.Utc)
+                }
+            };
+
+        [Theory]
+        [MemberData(nameof(TimeZoneOffsetUndesiredTestData))]
 #pragma warning disable CA1707
         public async void GivenDrsServiceHasAvailableAppointmentsThatAreNotRequiredDueToTimeZoneOffset_WhenGettingAvailableAppointments_ThenTheyAreFilteredOutOfAppointmentsThatAreReturned(AppointmentSlot unrequiredAppointmentSlot)
 #pragma warning restore CA1707
@@ -424,7 +514,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var locationId = "locationId";
 
             systemUnderTest = new DrsAppointmentGateway(
-                this.drsServiceMock.Object,
+                drsServiceMock.Object,
                 1,
                 AppointmentSearchTimeSpanInDays,
                 AppointmentLeadTimeInDays, 1);
@@ -436,13 +526,13 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 .ReturnsAsync(new[] { unrequiredAppointmentSlot });
 
             // Act
-            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: allowedAppointmentSlots);
 
             // Assert
             actualAppointments.Should().BeEmpty();
         }
 
-        public static IEnumerable<object[]> TimeZoneOffsetTestData()
+        public static IEnumerable<object[]> TimeZoneOffsetUndesiredTestData()
         {
             yield return new object[]
             {
@@ -620,7 +710,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             ).ReturnsAsync(bookingId);
 
             // Act
-            var startDateTime = It.IsAny<DateTime>();
+            var startDateTime = new DateTime(2022, 05, 01);
             var actual = await systemUnderTest.BookAppointment(BookingReference, SorCode, LocationId,
                 startDateTime, startDateTime.AddDays(1), OrderComments);
 

@@ -43,7 +43,7 @@ namespace HousingRepairsSchedulingApi
             services.AddTransient<IRetrieveAvailableAppointmentsUseCase, RetrieveAvailableAppointmentsUseCase>();
             services.AddTransient<IBookAppointmentUseCase, BookAppointmentUseCase>();
 
-            this.ConfigureOptions(services);
+            ConfigureOptions(services);
 
             services.AddScoped<SOAP>(sp =>
             {
@@ -106,7 +106,7 @@ namespace HousingRepairsSchedulingApi
 
         private void ConfigureOptions(IServiceCollection services)
         {
-            var drsOptionsConfiguration = this.Configuration.GetSection(nameof(DrsOptions));
+            var drsOptionsConfiguration = Configuration.GetSection(nameof(DrsOptions));
 
             if (string.IsNullOrEmpty(drsOptionsConfiguration[DrsOptionsApiAddressConfigurationKey]))
             {

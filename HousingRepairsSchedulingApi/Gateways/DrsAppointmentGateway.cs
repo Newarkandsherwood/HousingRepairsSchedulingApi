@@ -6,6 +6,7 @@ namespace HousingRepairsSchedulingApi.Gateways
     using System.Threading.Tasks;
     using Ardalis.GuardClauses;
     using Domain;
+    using Helpers;
     using Services.Drs;
 
     public class DrsAppointmentGateway : IAppointmentsGateway
@@ -33,10 +34,24 @@ namespace HousingRepairsSchedulingApi.Gateways
         }
 
         public async Task<IEnumerable<AppointmentSlot>> GetAvailableAppointments(string sorCode, string locationId,
-            DateTime? fromDate = null)
+            DateTime? fromDate = null, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
+
+            var desiredAppointmentSlots = allowedAppointmentSlots;
+
+            if (allowedAppointmentSlots != null)
+            {
+                var dayLightSavingsTimeAdjustedDesiredAppointmentSlots = allowedAppointmentSlots.Select(x =>
+                    new AppointmentSlotTimeSpan
+                    {
+                        StartTime = x.StartTime.Add(TimeSpan.FromHours(-1)),
+                        EndTime = x.EndTime.Add(TimeSpan.FromHours(-1))
+                    });
+                desiredAppointmentSlots =
+                    desiredAppointmentSlots.Concat(dayLightSavingsTimeAdjustedDesiredAppointmentSlots);
+            }
 
             var earliestDate = fromDate ?? DateTime.Today.AddDays(appointmentLeadTimeInDays);
             var appointmentSlots = Enumerable.Empty<AppointmentSlot>();
@@ -46,15 +61,8 @@ namespace HousingRepairsSchedulingApi.Gateways
             {
                 numberOfRequests++;
                 var appointments = await drsService.CheckAvailability(sorCode, locationId, earliestDate);
-                appointments = appointments.Where(x =>
-                    !(x.StartTime.Hour == 9 && x.EndTime.Minute == 30
-                      && x.EndTime.Hour == 14 && x.EndTime.Minute == 30) &&
-                    !(x.StartTime.Hour == 8 && x.EndTime.Minute == 0
-                                            && x.EndTime.Hour == 16 && x.EndTime.Minute == 0) &&
-                    !(x.StartTime.Hour == 8 && x.EndTime.Minute == 30
-                                            && x.EndTime.Hour == 13 && x.EndTime.Minute == 30) &&
-                    !(x.StartTime.Hour == 7 && x.EndTime.Minute == 0
-                                            && x.EndTime.Hour == 15 && x.EndTime.Minute == 0)
+                appointments = appointments.Where(x => desiredAppointmentSlots == null || desiredAppointmentSlots.Any(slot =>
+                    slot.StartTime == x.StartTime.TimeOfDay && slot.EndTime == x.EndTime.TimeOfDay)
                 );
                 appointmentSlots = appointmentSlots.Concat(appointments);
                 earliestDate = earliestDate.AddDays(appointmentSearchTimeSpanInDays);
@@ -77,7 +85,9 @@ namespace HousingRepairsSchedulingApi.Gateways
 
             var bookingId = await drsService.CreateOrder(bookingReference, sorCode, locationId, orderComments);
 
-            await drsService.ScheduleBooking(bookingReference, bookingId, startDateTime, endDateTime);
+            var convertedStartTime = DrsHelpers.ConvertToDrsTimeZone(startDateTime);
+            var convertedEndTime = DrsHelpers.ConvertToDrsTimeZone(endDateTime);
+            await drsService.ScheduleBooking(bookingReference, bookingId, convertedStartTime, convertedEndTime);
 
             return bookingReference;
         }

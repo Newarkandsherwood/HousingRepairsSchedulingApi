@@ -8,6 +8,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
     using System.Threading.Tasks;
     using Domain;
     using FluentAssertions;
+    using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
     using Moq;
     using Services.Drs;
@@ -39,7 +40,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                     @return = new xmbOpenSessionResponse { sessionId = "sessionId" }
                 });
 
-            systemUnderTest = new DrsService(soapMock.Object, drsOptionsMock.Object);
+            systemUnderTest = CreateDrsService(soapMock.Object, drsOptionsMock.Object);
         }
 
         [Fact]
@@ -48,7 +49,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<DrsService> act = () => new DrsService(null, It.IsAny<IOptions<DrsOptions>>());
+            Func<DrsService> act = () => CreateDrsService(null, It.IsAny<IOptions<DrsOptions>>());
 
             // Assert
             act.Should().ThrowExactly<ArgumentNullException>().WithParameterName("drsSoapClient");
@@ -60,7 +61,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<DrsService> act = () => new DrsService(new Mock<SOAP>().Object, null);
+            Func<DrsService> act = () => CreateDrsService(new Mock<SOAP>().Object, null);
 
             // Assert
             act.Should().ThrowExactly<ArgumentNullException>().WithParameterName("drsOptions");
@@ -75,7 +76,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 
             soapMock.Setup(x => x.checkAvailabilityAsync(It.IsAny<checkAvailability>()))
                 .ReturnsAsync(new checkAvailabilityResponse(
-                    new xmbCheckAvailabilityResponse { theSlots = daySlots }));
+                    new xmbCheckAvailabilityResponse { theSlots = daySlots, status = responseStatus.success }));
 
             // Act
             var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
@@ -181,6 +182,62 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
         }
 
         [Theory]
+        [MemberData(nameof(NonSuccessResponseStatuses))]
+#pragma warning disable CA1707
+        public async void GivenDrsCheckAvailabilityResponseDoesNotHaveSuccessStatus_WhenCheckingAvailability_ThenNoAppointmentsAreReturned(responseStatus status)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            soapMock.Setup(x => x.checkAvailabilityAsync(It.IsAny<checkAvailability>()))
+                .ReturnsAsync(new checkAvailabilityResponse(
+                    new xmbCheckAvailabilityResponse { status = status }));
+            var searchDate = new DateTime(2022, 1, 1);
+
+            // Act
+            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
+
+            // Assert
+            appointmentSlots.Should().BeEmpty();
+        }
+
+        [Theory]
+        [MemberData(nameof(NonSuccessResponseStatuses))]
+#pragma warning disable CA1707
+        public async void GivenDrsCheckAvailabilityResponseDoesNotHaveSuccessStatus_WhenCheckingAvailability_ThenInformationLogAdded(responseStatus status)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var loggerMock = new Mock<ILogger<DrsService>>();
+            var createLogger = () => loggerMock.Object;
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(drsOptions => { }, createLogger);
+            soapMock.Setup(x => x.checkAvailabilityAsync(It.IsAny<checkAvailability>()))
+                .ReturnsAsync(new checkAvailabilityResponse(
+                    new xmbCheckAvailabilityResponse { status = status }));
+            var searchDate = new DateTime(2022, 1, 1);
+
+            // Act
+            _ = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
+
+            // Assert
+            Assert.Equal(1, loggerMock.Invocations.Count);
+            Assert.Equal(LogLevel.Information, loggerMock.Invocations.Single().Arguments[0]);
+        }
+
+        public static TheoryData<responseStatus> NonSuccessResponseStatuses()
+        {
+            var responseStatuses = Enum.GetValues<responseStatus>();
+            var nonSuccessResponseStatuses = responseStatuses.Where(x => x != responseStatus.success);
+
+            var result = new TheoryData<responseStatus>();
+            foreach (var nonSuccessResponseStatus in nonSuccessResponseStatuses)
+            {
+                result.Add(nonSuccessResponseStatus);
+            }
+            return result;
+
+        }
+
+        [Theory]
         [MemberData(nameof(InvalidArgumentTestData))]
 #pragma warning disable xUnit1026
 #pragma warning disable CA1707
@@ -239,7 +296,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 #pragma warning restore CA1707
         {
             // Arrange
-            this.soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
+            soapMock.Setup(x => x.createOrderAsync(It.IsAny<createOrder>()))
                 .ReturnsAsync(new createOrderResponse(new xmbCreateOrderResponse
                 {
                     theOrder = new order { theBookings = new[] { new booking { bookingId = BookingId } } }
@@ -443,7 +500,16 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             actualPriority.Should().Be(drsPriority);
         }
 
-        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMock(Action<DrsOptions> additionalSetup)
+        private static DrsService CreateDrsService(SOAP soapClient, IOptions<DrsOptions> drsOptions, Func<ILogger<DrsService>> createLoggerFunction = default)
+        {
+            var loggerMock = createLoggerFunction != null
+                ? createLoggerFunction()
+                : new Mock<ILogger<DrsService>>().Object;
+
+            return new DrsService(soapClient, drsOptions, loggerMock);
+        }
+
+        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMock(Action<DrsOptions> additionalSetup, Func<ILogger<DrsService>> createLoggerFunction = default)
         {
             var drsOptionsMock = new Mock<IOptions<DrsOptions>>();
             var drsOptions = new DrsOptions { Login = "login", Password = "password" };
@@ -460,7 +526,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                     @return = new xmbOpenSessionResponse { sessionId = "sessionId" }
                 });
 
-            var drsService = new DrsService(soapMock.Object, drsOptionsMock.Object);
+            var drsService = CreateDrsService(soapMock.Object, drsOptionsMock.Object, createLoggerFunction);
 
             return (drsService, soapMock);
         }
