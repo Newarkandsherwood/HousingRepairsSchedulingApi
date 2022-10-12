@@ -83,7 +83,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
         [Fact]
 #pragma warning disable xUnit1026
 #pragma warning disable CA1707
-        public async void GivenAnInvalidOrderComments_WhenExecute_ThenExceptionIsThrown()
+        public async void GivenOrderCommentsLongerThan255Characters_WhenExecute_ThenExceptionIsThrown()
 #pragma warning restore xUnit1026
         {
             // Arrange
