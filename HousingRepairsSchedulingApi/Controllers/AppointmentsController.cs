@@ -1,12 +1,10 @@
 namespace HousingRepairsSchedulingApi.Controllers
 {
     using System;
-    using System.Text.Json;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Domain;
     using Microsoft.AspNetCore.Mvc;
-    using Newtonsoft.Json.Linq;
     using Sentry;
     using UseCases;
 
