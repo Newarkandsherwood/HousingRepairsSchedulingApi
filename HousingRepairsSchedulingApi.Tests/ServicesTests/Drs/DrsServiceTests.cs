@@ -417,7 +417,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId,orderComments);
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId, orderComments);
 
             // Assert
             actualContract.Should().NotBeNull();

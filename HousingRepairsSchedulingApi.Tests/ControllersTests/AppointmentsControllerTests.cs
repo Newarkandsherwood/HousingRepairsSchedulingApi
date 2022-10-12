@@ -14,7 +14,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
     {
         private const string SorCode = "SOR Code";
         private const string LocationId = "locationId";
-        private RepairDescription orderComments = new RepairDescription{Text = "something"};
+        private RepairDescription orderComments = new RepairDescription { Text = "something" };
         private AppointmentsController systemUndertest;
         private Mock<IRetrieveAvailableAppointmentsUseCase> availableAppointmentsUseCaseMock;
         private Mock<IBookAppointmentUseCase> bookAppointmentUseCaseMock;
