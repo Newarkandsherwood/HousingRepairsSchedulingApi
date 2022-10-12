@@ -98,6 +98,23 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
         }
 
         [Fact]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenOrderCommentsOf0Characters_WhenExecute_ThenExceptionIsThrown()
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+            var orderComments = "";
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, LocationId,
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), orderComments);
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<ArgumentException>();
+        }
+
+        [Fact]
 #pragma warning disable CA1707
         public async void GivenAnEndDateEarlierThanTheStartDate_WhenExecute_ThenInvalidExceptionIsThrown()
 #pragma warning restore CA1707
