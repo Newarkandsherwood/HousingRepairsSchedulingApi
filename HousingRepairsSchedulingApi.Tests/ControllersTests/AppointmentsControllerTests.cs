@@ -14,7 +14,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
     {
         private const string SorCode = "SOR Code";
         private const string LocationId = "locationId";
-        RepairDescription orderComments = new RepairDescription{Text = "something"};
+        private RepairDescription orderComments = new RepairDescription{Text = "something"};
         private AppointmentsController systemUndertest;
         private Mock<IRetrieveAvailableAppointmentsUseCase> availableAppointmentsUseCaseMock;
         private Mock<IBookAppointmentUseCase> bookAppointmentUseCaseMock;
@@ -56,9 +56,8 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             const string bookingReference = "bookingReference";
             var startDateTime = It.IsAny<DateTime>();
             var endDateTime = It.IsAny<DateTime>();
-            RepairDescription orderComment = new RepairDescription{Text = "something"};
 
-            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComment);
+            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
             GetStatusCode(result).Should().Be(200);
         }
 
