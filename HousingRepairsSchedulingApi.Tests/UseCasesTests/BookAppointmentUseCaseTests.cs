@@ -101,6 +101,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
 #pragma warning disable xUnit1026
 #pragma warning disable CA1707
         public async void GivenOrderCommentsOf0Characters_WhenExecute_ThenExceptionIsThrown()
+#pragma warning restore CA1707
 #pragma warning restore xUnit1026
         {
             // Arrange
