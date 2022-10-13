@@ -75,15 +75,14 @@ namespace HousingRepairsSchedulingApi.Gateways
         }
 
         public async Task<string> BookAppointment(string bookingReference, string sorCode, string locationId,
-            DateTime startDateTime, DateTime endDateTime, string orderComments)
+            DateTime startDateTime, DateTime endDateTime)
         {
             Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
-            Guard.Against.NullOrWhiteSpace(orderComments, nameof(orderComments));
             Guard.Against.OutOfRange(endDateTime, nameof(endDateTime), startDateTime, DateTime.MaxValue);
 
-            var bookingId = await drsService.CreateOrder(bookingReference, sorCode, locationId, orderComments);
+            var bookingId = await drsService.CreateOrder(bookingReference, sorCode, locationId);
 
             var convertedStartTime = DrsHelpers.ConvertToDrsTimeZone(startDateTime);
             var convertedEndTime = DrsHelpers.ConvertToDrsTimeZone(endDateTime);

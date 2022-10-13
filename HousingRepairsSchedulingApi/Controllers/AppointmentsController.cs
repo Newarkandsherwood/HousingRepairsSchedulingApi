@@ -44,12 +44,11 @@ namespace HousingRepairsSchedulingApi.Controllers
             [FromQuery] string sorCode,
             [FromQuery] string locationId,
             [FromQuery] DateTime startDateTime,
-            [FromQuery] DateTime endDateTime,
-            [FromBody] RepairDescription repairDescriptionText)
+            [FromQuery] DateTime endDateTime)
         {
             try
             {
-                var result = await bookAppointmentUseCase.Execute(bookingReference, sorCode, locationId, startDateTime, endDateTime, repairDescriptionText.Text);
+                var result = await bookAppointmentUseCase.Execute(bookingReference, sorCode, locationId, startDateTime, endDateTime);
 
                 return Ok(result);
             }

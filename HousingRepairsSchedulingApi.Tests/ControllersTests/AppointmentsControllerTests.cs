@@ -7,14 +7,12 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
 {
     using System;
     using Controllers;
-    using Domain;
     using UseCases;
 
     public class AppointmentsControllerTests : ControllerTests
     {
         private const string SorCode = "SOR Code";
         private const string LocationId = "locationId";
-        private RepairDescription orderComments = new RepairDescription { Text = "something" };
         private AppointmentsController systemUndertest;
         private Mock<IRetrieveAvailableAppointmentsUseCase> availableAppointmentsUseCaseMock;
         private Mock<IBookAppointmentUseCase> bookAppointmentUseCaseMock;
@@ -58,7 +56,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var startDateTime = It.IsAny<DateTime>();
             var endDateTime = It.IsAny<DateTime>();
 
-            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime);
             GetStatusCode(result).Should().Be(200);
         }
 
@@ -88,9 +86,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var endDateTime = It.IsAny<DateTime>();
 
             const string errorMessage = "An error message";
-            bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
+            bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>())).Throws(new Exception(errorMessage));
 
-            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime);
 
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);
