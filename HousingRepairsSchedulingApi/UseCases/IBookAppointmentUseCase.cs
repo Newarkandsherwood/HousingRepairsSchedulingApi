@@ -6,6 +6,6 @@ namespace HousingRepairsSchedulingApi.UseCases
     public interface IBookAppointmentUseCase
     {
         public Task<string> Execute(string bookingReference, string sorCode, string locationId,
-            DateTime startDateTime, DateTime endDateTime);
+            DateTime startDateTime, DateTime endDateTime, string orderComments);
     }
 }
