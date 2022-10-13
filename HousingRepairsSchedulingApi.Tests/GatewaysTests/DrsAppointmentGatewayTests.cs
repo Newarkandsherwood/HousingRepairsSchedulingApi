@@ -29,6 +29,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
         private const string BookingReference = "Booking Reference";
         private const string SorCode = "SOR Code";
         private const string LocationId = "locationId";
+        private const string OrderComments = "orderComments";
 
         public DrsAppointmentGatewayTests()
         {
@@ -637,7 +638,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<Task> act = async () => await systemUnderTest.BookAppointment(bookingReference, SorCode, LocationId,
-                It.IsAny<DateTime>(), It.IsAny<DateTime>());
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -655,7 +656,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, sorCode, LocationId,
-                It.IsAny<DateTime>(), It.IsAny<DateTime>());
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -673,7 +674,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, SorCode, locationId,
-                It.IsAny<DateTime>(), It.IsAny<DateTime>());
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -690,7 +691,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<Task> act = async () =>
-                await systemUnderTest.BookAppointment(BookingReference, SorCode, LocationId, startDate, endDate);
+                await systemUnderTest.BookAppointment(BookingReference, SorCode, LocationId, startDate, endDate, OrderComments);
 
             // Assert
             await act.Should().ThrowExactlyAsync<ArgumentOutOfRangeException>();
@@ -705,13 +706,13 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             const int bookingId = 12345;
 
             drsServiceMock.Setup(x =>
-                x.CreateOrder(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())
+                x.CreateOrder(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())
             ).ReturnsAsync(bookingId);
 
             // Act
             var startDateTime = new DateTime(2022, 05, 01);
             var actual = await systemUnderTest.BookAppointment(BookingReference, SorCode, LocationId,
-                startDateTime, startDateTime.AddDays(1));
+                startDateTime, startDateTime.AddDays(1), OrderComments);
 
             // Assert
             Assert.Equal(BookingReference, actual);
