@@ -58,7 +58,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var startDateTime = It.IsAny<DateTime>();
             var endDateTime = It.IsAny<DateTime>();
 
-            var result = await this.systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
             GetStatusCode(result).Should().Be(200);
         }
 
