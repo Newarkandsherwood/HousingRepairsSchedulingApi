@@ -51,7 +51,7 @@ jobs:
   build:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     name: Build Release
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
@@ -134,7 +134,7 @@ jobs:
 
   deploy-staging:
     name: "Deploy Staging"
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: [test, format, build, infrastructure]
     environment:
       name: 'Staging'
