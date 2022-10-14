@@ -92,7 +92,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             return appointmentSlots;
         }
 
-        public async Task<int> CreateOrder(string bookingReference, string sorCode, string locationId)
+        public async Task<int> CreateOrder(string bookingReference, string sorCode, string locationId, string orderComments)
         {
             Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
@@ -107,7 +107,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                 {
                     contract = drsOptions.Value.Contract,
                     locationID = locationId,
-                    orderComments = " ",
+                    orderComments = orderComments,
                     primaryOrderNumber = bookingReference,
                     priority = drsOptions.Value.Priority,
                     targetDate = DateTime.Today.AddDays(20),
@@ -121,7 +121,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                             primaryOrderNumber = bookingReference,
                             quantity = "1",
                         }
-                    }
+                    },
                 }
             };
 
