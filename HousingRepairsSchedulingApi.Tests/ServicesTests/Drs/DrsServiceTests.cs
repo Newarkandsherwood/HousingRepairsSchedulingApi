@@ -18,6 +18,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
     public class DrsServiceTests
     {
         private const string SorCode = "SorCode";
+        private const string Priority = "priority";
         private const string LocationId = "LocationId";
         private const string BookingReference = "BookingReference";
         private const int BookingId = 12345;
@@ -79,7 +80,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                     new xmbCheckAvailabilityResponse { theSlots = daySlots, status = responseStatus.success }));
 
             // Act
-            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
+            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, Priority, LocationId, searchDate);
 
             // Assert
             appointmentSlots.Should().BeEquivalentTo(expected);
@@ -174,7 +175,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                     new xmbCheckAvailabilityResponse { theSlots = new[] { new daySlotsInfo { day = dateTime } } }));
 
             // Act
-            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, LocationId, dateTime);
+            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, Priority, LocationId, dateTime);
             Func<IEnumerable<AppointmentSlot>> act = () => appointmentSlots.ToArray();
 
             // Assert
@@ -194,7 +195,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             var searchDate = new DateTime(2022, 1, 1);
 
             // Act
-            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
+            var appointmentSlots = await systemUnderTest.CheckAvailability(SorCode, Priority, LocationId, searchDate);
 
             // Assert
             appointmentSlots.Should().BeEmpty();
@@ -216,7 +217,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             var searchDate = new DateTime(2022, 1, 1);
 
             // Act
-            _ = await systemUnderTest.CheckAvailability(SorCode, LocationId, searchDate);
+            _ = await systemUnderTest.CheckAvailability(SorCode, Priority, LocationId, searchDate);
 
             // Assert
             Assert.Equal(1, loggerMock.Invocations.Count);
@@ -248,12 +249,11 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.CreateOrder(bookingReference, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>());
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(bookingReference, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
         }
-
 
         [Theory]
         [MemberData(nameof(InvalidArgumentTestData))]
@@ -266,12 +266,28 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, sorCode, It.IsAny<string>(), It.IsAny<string>());
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, sorCode, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
         }
 
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenInvalidPriority_WhenCreatingAnOrder_ThenExceptionIsThrown<T>(T exception, string priority) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, SorCode, priority, It.IsAny<string>(), It.IsAny<string>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
 
         [Theory]
         [MemberData(nameof(InvalidArgumentTestData))]
@@ -284,7 +300,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, SorCode, locationId, orderComments);
+            Func<Task> act = async () => await systemUnderTest.CreateOrder(BookingReference, SorCode, Priority, locationId, orderComments);
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -303,7 +319,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            var actual = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId, orderComments);
+            var actual = await systemUnderTest.CreateOrder(BookingReference, SorCode, Priority, LocationId, orderComments);
 
             // Assert
             Assert.Equal(BookingId, actual);
@@ -390,7 +406,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                     new xmbCheckAvailabilityResponse { theSlots = new[] { new daySlotsInfo { day = dateTime } } }));
 
             // Act
-            _ = await systemUnderTest.CheckAvailability(SorCode, LocationId, dateTime);
+            _ = await systemUnderTest.CheckAvailability(SorCode, Priority, LocationId, dateTime);
 
             // Assert
             actualContract.Should().NotBeNull();
@@ -417,7 +433,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId, orderComments);
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, Priority, LocationId, orderComments);
 
             // Assert
             actualContract.Should().NotBeNull();
@@ -450,12 +466,29 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
         }
 
         [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenInvalidPriority_WhenCheckingAvailability_ThenExceptionIsThrown<T>(T exception, string priority) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.CheckAvailability(SorCode, priority, It.IsAny<string>(), It.IsAny<DateTime>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Theory]
         [InlineData("Priority1")]
         [InlineData("Priority2")]
         public async void GivenDrsPriority_WhenCheckingAvailability_ThenDrsPriorityIsUsed(string drsPriority)
         {
             // Arrange
-            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithPriority(drsPriority);
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(_ => { });
 
             var dateTime = new DateTime(2022, 1, 1);
             string actualPriority = null;
@@ -466,7 +499,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                     new xmbCheckAvailabilityResponse { theSlots = new[] { new daySlotsInfo { day = dateTime } } }));
 
             // Act
-            _ = await systemUnderTest.CheckAvailability(SorCode, LocationId, dateTime);
+            _ = await systemUnderTest.CheckAvailability(SorCode, drsPriority, LocationId, dateTime);
 
             // Assert
             actualPriority.Should().NotBeNull();
@@ -481,7 +514,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
 #pragma warning restore CA1707
         {
             // Arrange
-            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMockWithPriority(drsPriority);
+            var (systemUnderTest, soapMock) = CreateSystemUnderTestAndSoapMock(_ => { });
 
             string actualPriority = null;
 
@@ -493,7 +526,7 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
                 }));
 
             // Act
-            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, LocationId, orderComments);
+            _ = await systemUnderTest.CreateOrder(BookingReference, SorCode, drsPriority, LocationId, orderComments);
 
             // Assert
             actualPriority.Should().NotBeNull();
@@ -536,13 +569,6 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             Action<DrsOptions> setupContract = drsOptions => drsOptions.Contract = contract;
 
             return CreateSystemUnderTestAndSoapMock(setupContract);
-        }
-
-        private (DrsService, Mock<SOAP>) CreateSystemUnderTestAndSoapMockWithPriority(string priority)
-        {
-            Action<DrsOptions> setupPriority = drsOptions => drsOptions.Priority = priority;
-
-            return CreateSystemUnderTestAndSoapMock(setupPriority);
         }
     }
 }

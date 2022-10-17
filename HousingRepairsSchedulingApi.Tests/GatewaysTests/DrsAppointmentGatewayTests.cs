@@ -210,6 +210,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var sorCode = "sorCode";
             var locationId = "locationId";
             drsServiceMock.Setup(x => x.CheckAvailability(It.IsAny<string>(),
+                Priority,
                 It.IsAny<string>(),
                 It.IsAny<DateTime>())).ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5));
 
@@ -229,6 +230,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var sorCode = "sorCode";
             var locationId = "locationId";
             drsServiceMock.Setup(x => x.CheckAvailability(It.IsAny<string>(),
+                Priority,
                 It.IsAny<string>(),
                 It.IsAny<DateTime>())).ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5));
 
@@ -249,6 +251,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var locationId = "locationId";
             var appointmentsForSequentialDays = CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5);
             drsServiceMock.Setup(x => x.CheckAvailability(It.IsAny<string>(),
+                Priority,
                 It.IsAny<string>(),
                 It.IsAny<DateTime>())).ReturnsAsync(appointmentsForSequentialDays);
 
@@ -273,6 +276,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             var setupSequentialResult = drsServiceMock.SetupSequence(x => x.CheckAvailability(
                     It.IsAny<string>(),
+                    Priority,
                     It.IsAny<string>(),
                     It.IsAny<DateTime>()));
 
@@ -451,6 +455,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             drsServiceMock.SetupSequence(x => x.CheckAvailability(
                     It.IsAny<string>(),
+                    Priority,
                     It.IsAny<string>(),
                     It.IsAny<DateTime>()))
                 .ReturnsAsync(CreateAppointmentsForDay(new DateTime(2022, 1, 17), true, true, true, true));
@@ -494,6 +499,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             drsServiceMock.SetupSequence(x => x.CheckAvailability(
                     It.IsAny<string>(),
+                    Priority,
                     It.IsAny<string>(),
                     It.IsAny<DateTime>()))
                 .ReturnsAsync(new[] { requiredAppointmentSlot });
@@ -539,6 +545,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             drsServiceMock.SetupSequence(x => x.CheckAvailability(
                     It.IsAny<string>(),
+                    Priority,
                     It.IsAny<string>(),
                     It.IsAny<DateTime>()))
                 .ReturnsAsync(new[] { unrequiredAppointmentSlot });
@@ -582,11 +589,13 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             drsServiceMock.Setup(x => x.CheckAvailability(
                     It.IsAny<string>(),
+                    Priority,
                     It.IsAny<string>(),
                     new DateTime(2022, 1, 17)))
                 .ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), RequiredNumberOfAppointmentDays - 2));
             drsServiceMock.Setup(x => x.CheckAvailability(
                         It.IsAny<string>(),
+                        Priority,
                         It.IsAny<string>(),
                         new DateTime(2022, 1, 31)))
                 .ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 31),
@@ -612,6 +621,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Assert
             drsServiceMock.Verify(x => x.CheckAvailability(
                 It.IsAny<string>(),
+                Priority,
                 It.IsAny<string>(),
                 It.IsAny<DateTime>()), Times.Exactly(10));
         }
@@ -625,6 +635,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             Expression<Func<IDrsService, Task<IEnumerable<AppointmentSlot>>>> expression = x => x.CheckAvailability(
                 It.IsAny<string>(),
+                Priority,
                 It.IsAny<string>(),
                 It.IsAny<DateTime>());
             drsServiceMock.SetupSequence(expression)
@@ -640,6 +651,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Assert
             drsServiceMock.Verify(x => x.CheckAvailability(
                 It.IsAny<string>(),
+                Priority,
                 It.IsAny<string>(),
                 It.IsAny<DateTime>()), Times.AtMost(10));
         }
@@ -742,7 +754,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             const int bookingId = 12345;
 
             drsServiceMock.Setup(x =>
-                x.CreateOrder(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())
+                x.CreateOrder(It.IsAny<string>(), It.IsAny<string>(), Priority, It.IsAny<string>(), It.IsAny<string>())
             ).ReturnsAsync(bookingId);
 
             // Act
