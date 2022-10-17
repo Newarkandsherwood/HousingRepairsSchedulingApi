@@ -169,6 +169,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<string>(),
+                    It.IsAny<string>(),
                     It.IsAny<DateTime>(),
                     It.IsAny<DateTime>(),
                     It.IsAny<string>()

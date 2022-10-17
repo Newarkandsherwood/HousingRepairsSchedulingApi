@@ -33,10 +33,11 @@ namespace HousingRepairsSchedulingApi.Gateways
             this.maximumNumberOfRequests = maximumNumberOfRequests;
         }
 
-        public async Task<IEnumerable<AppointmentSlot>> GetAvailableAppointments(string sorCode, string locationId,
+        public async Task<IEnumerable<AppointmentSlot>> GetAvailableAppointments(string sorCode, string priority, string locationId,
             DateTime? fromDate = null, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
+            Guard.Against.NullOrWhiteSpace(priority, nameof(priority));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
 
             var desiredAppointmentSlots = allowedAppointmentSlots;
@@ -74,11 +75,12 @@ namespace HousingRepairsSchedulingApi.Gateways
             return appointmentSlots;
         }
 
-        public async Task<string> BookAppointment(string bookingReference, string sorCode, string locationId,
+        public async Task<string> BookAppointment(string bookingReference, string sorCode, string priority, string locationId,
             DateTime startDateTime, DateTime endDateTime, string orderComments)
         {
             Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
+            Guard.Against.NullOrWhiteSpace(priority, nameof(priority));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
             Guard.Against.NullOrWhiteSpace(orderComments, nameof(orderComments));
             Guard.Against.OutOfRange(endDateTime, nameof(endDateTime), startDateTime, DateTime.MaxValue);

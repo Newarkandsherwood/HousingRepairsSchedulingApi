@@ -25,7 +25,7 @@ namespace HousingRepairsSchedulingApi.UseCases
             Guard.Against.OutOfRange(endDateTime, nameof(endDateTime), startDateTime, DateTime.MaxValue);
             Guard.Against.OutOfRange(orderComments.Length, nameof(orderComments), 1, 255);
 
-            var result = appointmentsGateway.BookAppointment(bookingReference, sorCode, locationId,
+            var result = appointmentsGateway.BookAppointment(bookingReference, sorCode, priority, locationId,
                 startDateTime, endDateTime, orderComments);
 
             return result;
