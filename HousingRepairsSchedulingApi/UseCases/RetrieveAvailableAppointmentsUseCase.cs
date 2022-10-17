@@ -24,7 +24,7 @@ namespace HousingRepairsSchedulingApi.UseCases
             Guard.Against.NullOrWhiteSpace(priority, nameof(priority));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
 
-            var availableAppointments = await appointmentsGateway.GetAvailableAppointments(sorCode, locationId, fromDate, allowedAppointmentSlots);
+            var availableAppointments = await appointmentsGateway.GetAvailableAppointments(sorCode, priority, locationId, fromDate, allowedAppointmentSlots);
 
             var result = availableAppointments.Select(x => x.ToHactAppointment());
 

@@ -28,6 +28,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
         private const int MaximumNumberOfRequests = 10;
         private const string BookingReference = "Booking Reference";
         private const string SorCode = "SOR Code";
+        private const string Priority = "Priority";
         private const string LocationId = "locationId";
         private const string OrderComments = "orderComments";
 
@@ -159,7 +160,24 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, It.IsAny<string>());
+            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, It.IsAny<string>(), It.IsAny<string>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenInvalidPriority_WhenGettingAvailableAppointments_ThenExceptionIsThrown<T>(T exception, string priority) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(SorCode, priority, It.IsAny<string>());
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -177,7 +195,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var sorCode = "sorCode";
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId);
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -215,7 +233,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 It.IsAny<DateTime>())).ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5));
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: null);
+            Func<Task> act = async () => await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, allowedAppointmentSlots: null);
 
             // Assert
             await act.Should().NotThrowAsync<NullReferenceException>();
@@ -235,7 +253,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 It.IsAny<DateTime>())).ReturnsAsync(appointmentsForSequentialDays);
 
             // Act
-            var actual = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: null);
+            var actual = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, allowedAppointmentSlots: null);
 
             // Assert
             actual.Should().BeEquivalentTo(appointmentsForSequentialDays);
@@ -264,7 +282,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             }
 
             // Act
-            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId);
 
             // Assert
             Assert.Equal(RequiredNumberOfAppointmentDays, actualAppointments.Select(x => x.StartTime.Date).Distinct().Count());
@@ -452,7 +470,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 };
 
             // Act
-            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: allowedAppointmentSlots);
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, allowedAppointmentSlots: allowedAppointmentSlots);
 
             // Assert
             actualAppointments.Should().BeEquivalentTo(expected);
@@ -481,7 +499,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 .ReturnsAsync(new[] { requiredAppointmentSlot });
 
             // Act
-            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId);
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId);
 
             // Assert
             actualAppointments.Should().HaveCount(1);
@@ -526,7 +544,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 .ReturnsAsync(new[] { unrequiredAppointmentSlot });
 
             // Act
-            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, allowedAppointmentSlots: allowedAppointmentSlots);
+            var actualAppointments = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, allowedAppointmentSlots: allowedAppointmentSlots);
 
             // Assert
             actualAppointments.Should().BeEmpty();
@@ -575,7 +593,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                     RequiredNumberOfAppointmentDays - (RequiredNumberOfAppointmentDays - 2)));
 
             // Act
-            _ = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, new DateTime(2022, 1, 17));
+            _ = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, new DateTime(2022, 1, 17));
 
             // Assert
             drsServiceMock.VerifyAll();
@@ -589,7 +607,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             var locationId = "locationId";
 
             // Act
-            _ = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, new DateTime(2022, 1, 17));
+            _ = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, new DateTime(2022, 1, 17));
 
             // Assert
             drsServiceMock.Verify(x => x.CheckAvailability(
@@ -617,7 +635,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
                 .ReturnsAsync(CreateAppointmentsForSequentialDays(new DateTime(2022, 1, 17), 5));
 
             // Act
-            _ = await systemUnderTest.GetAvailableAppointments(sorCode, locationId, new DateTime(2022, 1, 17));
+            _ = await systemUnderTest.GetAvailableAppointments(sorCode, Priority, locationId, new DateTime(2022, 1, 17));
 
             // Assert
             drsServiceMock.Verify(x => x.CheckAvailability(
@@ -637,7 +655,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.BookAppointment(bookingReference, SorCode, LocationId,
+            Func<Task> act = async () => await systemUnderTest.BookAppointment(bookingReference, SorCode, Priority, LocationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
@@ -655,7 +673,25 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, sorCode, LocationId,
+            Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, sorCode, Priority, LocationId,
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenAnInvalidPriority_WhenBookingAppointment_ThenExceptionIsThrown<T>(T exception, string priority) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, SorCode, priority, LocationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
@@ -673,7 +709,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, SorCode, locationId,
+            Func<Task> act = async () => await systemUnderTest.BookAppointment(BookingReference, SorCode, Priority, locationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
@@ -691,7 +727,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             Func<Task> act = async () =>
-                await systemUnderTest.BookAppointment(BookingReference, SorCode, LocationId, startDate, endDate, OrderComments);
+                await systemUnderTest.BookAppointment(BookingReference, SorCode, Priority, LocationId, startDate, endDate, OrderComments);
 
             // Assert
             await act.Should().ThrowExactlyAsync<ArgumentOutOfRangeException>();
@@ -711,7 +747,7 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
 
             // Act
             var startDateTime = new DateTime(2022, 05, 01);
-            var actual = await systemUnderTest.BookAppointment(BookingReference, SorCode, LocationId,
+            var actual = await systemUnderTest.BookAppointment(BookingReference, SorCode, Priority, LocationId,
                 startDateTime, startDateTime.AddDays(1), OrderComments);
 
             // Assert
