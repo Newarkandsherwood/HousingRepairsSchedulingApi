@@ -34,7 +34,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
             var result = await systemUndertest.AvailableAppointments(SorCode, Priority, LocationId);
             GetStatusCode(result).Should().Be(200);
-            availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, LocationId, null, null), Times.Once);
+            availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, Priority, LocationId, null, null), Times.Once);
         }
 
 
@@ -43,7 +43,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
 
             const string errorMessage = "An error message";
-            availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), null, null))
+            availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), Priority, It.IsAny<String>(), null, null))
                 .Throws(new Exception(errorMessage));
 
             var result = await systemUndertest.AvailableAppointments(SorCode, Priority, LocationId);
@@ -78,7 +78,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
 
             // Assert
             GetStatusCode(result).Should().Be(200);
-            availableAppointmentsUseCaseMock.Verify(x => x.Execute(sorCode, locationId, fromDate, null), Times.Once);
+            availableAppointmentsUseCaseMock.Verify(x => x.Execute(sorCode, Priority, locationId, fromDate, null), Times.Once);
         }
 
         [Fact]
@@ -89,7 +89,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var endDateTime = It.IsAny<DateTime>();
 
             const string errorMessage = "An error message";
-            bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
+            bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), Priority, It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
 
             var result = await systemUndertest.BookAppointment(bookingReference, SorCode, Priority, LocationId, startDateTime, endDateTime, orderComments);
 

@@ -8,6 +8,6 @@ namespace HousingRepairsSchedulingApi.UseCases
 
     public interface IRetrieveAvailableAppointmentsUseCase
     {
-        public Task<IEnumerable<Appointment>> Execute(string sorCode, string locationId, DateTime? fromDate, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default);
+        public Task<IEnumerable<Appointment>> Execute(string sorCode, string priority, string locationId, DateTime? fromDate, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default);
     }
 }
