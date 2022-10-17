@@ -11,6 +11,8 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
 
     public class RetrieveAvailableAppointmentsTests
     {
+        private const string Priority = "Priority";
+
         private readonly RetrieveAvailableAppointmentsUseCase sytemUndertest;
         private readonly Mock<IAppointmentsGateway> appointmentsGatewayMock;
 
@@ -32,7 +34,25 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             var systemUnderTest = new RetrieveAvailableAppointmentsUseCase(appointmentsGatewayMock.Object);
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute(sorCode, "locationId");
+            Func<Task> act = async () => await systemUnderTest.Execute(sorCode, Priority, "locationId");
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenAnInvalidPriority_WhenExecute_ThenExceptionIsThrown<T>(T exception, string priority) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+            var systemUnderTest = new RetrieveAvailableAppointmentsUseCase(appointmentsGatewayMock.Object);
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.Execute("sorCode", priority, "locationId");
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -50,7 +70,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             var systemUnderTest = new RetrieveAvailableAppointmentsUseCase(appointmentsGatewayMock.Object);
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute("uprn", locationId);
+            Func<Task> act = async () => await systemUnderTest.Execute("uprn", Priority, locationId);
 
             // Assert
             await act.Should().ThrowExactlyAsync<T>();
@@ -65,7 +85,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             var systemUnderTest = new RetrieveAvailableAppointmentsUseCase(appointmentsGatewayMock.Object);
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute("SoR Code", "location Id", null);
+            Func<Task> act = async () => await systemUnderTest.Execute("SoR Code", Priority, "location Id", null);
 
             // Assert
             await act.Should().NotThrowAsync();
@@ -81,7 +101,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
 
             // Act
             Func<Task> act = async () =>
-                await systemUnderTest.Execute("SoR Code", "location Id", allowedAppointmentSlots: null);
+                await systemUnderTest.Execute("SoR Code", Priority, "location Id", allowedAppointmentSlots: null);
 
             // Assert
             await act.Should().NotThrowAsync();
@@ -101,7 +121,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
         {
             const string uprn = "uprn";
             const string locationId = "locationId";
-            await sytemUndertest.Execute("uprn", "locationId");
+            await sytemUndertest.Execute("uprn", Priority, "locationId");
             appointmentsGatewayMock.Verify(x => x.GetAvailableAppointments(uprn, locationId, null, null), Times.Once);
         }
     }

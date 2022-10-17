@@ -13,6 +13,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
     {
         private const string BookingReference = "BookingReference";
         private const string SorCode = "SOR Code";
+        private const string Priority = "Priority";
         private const string LocationId = "locationId";
         const string orderComment = "order comment";
 
@@ -37,7 +38,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute(bookingReference, SorCode, LocationId,
+            Func<Task> act = async () => await systemUnderTest.Execute(bookingReference, SorCode, Priority, LocationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
@@ -55,7 +56,25 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, sorCode, LocationId,
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, sorCode, Priority, LocationId,
+                It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenAnInvalidPriority_WhenExecute_ThenExceptionIsThrown<T>(T exception, string priority) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, priority, LocationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
@@ -73,7 +92,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             // Arrange
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, locationId,
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, Priority, locationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>());
 
             // Assert
@@ -91,7 +110,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             var orderComments =
                 "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,.";
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, LocationId,
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, Priority, LocationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), orderComments);
 
             // Assert
@@ -109,7 +128,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
             var orderComments = "";
 
             // Act
-            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, LocationId,
+            Func<Task> act = async () => await systemUnderTest.Execute(BookingReference, SorCode, Priority, LocationId,
                 It.IsAny<DateTime>(), It.IsAny<DateTime>(), orderComments);
 
             // Assert
@@ -127,7 +146,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
 
             // Act
             Func<Task> act = async () =>
-                await systemUnderTest.Execute(BookingReference, SorCode, LocationId, startDate, endDate, orderComment);
+                await systemUnderTest.Execute(BookingReference, SorCode, Priority, LocationId, startDate, endDate, orderComment);
 
             // Assert
             await act.Should().ThrowExactlyAsync<ArgumentOutOfRangeException>();
@@ -158,7 +177,7 @@ namespace HousingRepairsSchedulingApi.Tests.UseCasesTests
 
             // Act
             var startDateTime = It.IsAny<DateTime>();
-            var actual = await systemUnderTest.Execute(BookingReference, SorCode, LocationId,
+            var actual = await systemUnderTest.Execute(BookingReference, SorCode, Priority, LocationId,
                 startDateTime, startDateTime.AddDays(1), orderComment);
 
             // Assert

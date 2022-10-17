@@ -18,9 +18,10 @@ namespace HousingRepairsSchedulingApi.UseCases
             this.appointmentsGateway = appointmentsGateway;
         }
 
-        public async Task<IEnumerable<Appointment>> Execute(string sorCode, string locationId, DateTime? fromDate = null, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
+        public async Task<IEnumerable<Appointment>> Execute(string sorCode, string priority, string locationId, DateTime? fromDate = null, IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
+            Guard.Against.NullOrWhiteSpace(priority, nameof(priority));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
 
             var availableAppointments = await appointmentsGateway.GetAvailableAppointments(sorCode, locationId, fromDate, allowedAppointmentSlots);
