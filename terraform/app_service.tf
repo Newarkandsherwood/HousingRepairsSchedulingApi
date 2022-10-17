@@ -17,7 +17,6 @@ resource "azurerm_windows_web_app_slot" "hro-scheduling-api-staging-slot" {
     DrsOptions__Login         = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-login-staging.id})"
     DrsOptions__Password      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-password-staging.id})"
     DrsOptions__Contract      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-contract-staging.id})"
-    DrsOptions__Priority      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-priority-staging.id})"
   }
 
   identity {
@@ -67,6 +66,5 @@ resource "azurerm_windows_web_app" "hro-scheduling-api" {
     DrsOptions__Login         = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-login-production.id})"
     DrsOptions__Password      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-password-production.id})"
     DrsOptions__Contract      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-contract-production.id})"
-    DrsOptions__Priority      = "@Microsoft.KeyVault(SecretUri=${azurerm_key_vault_secret.drs-priority-production.id})"
   }
 }

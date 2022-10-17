@@ -44,9 +44,6 @@ variable "drs_password_production" {
 variable "drs_contract_production" {
   default = ""
 }
-variable "drs_priority_production" {
-  default = ""
-}
 variable "drs_api_address_staging" {
   default = ""
 }
@@ -59,9 +56,6 @@ variable "drs_password_staging" {
   sensitive = true
 }
 variable "drs_contract_staging" {
-  default = ""
-}
-variable "drs_priority_staging" {
   default = ""
 }
 variable "azure_ad_tenant_id" {
