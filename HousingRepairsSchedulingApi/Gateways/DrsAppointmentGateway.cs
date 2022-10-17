@@ -61,7 +61,7 @@ namespace HousingRepairsSchedulingApi.Gateways
             while (numberOfRequests < maximumNumberOfRequests && appointmentSlots.Select(x => x.StartTime.Date).Distinct().Count() < requiredNumberOfAppointmentDays)
             {
                 numberOfRequests++;
-                var appointments = await drsService.CheckAvailability(sorCode, locationId, earliestDate);
+                var appointments = await drsService.CheckAvailability(sorCode, priority, locationId, earliestDate);
                 appointments = appointments.Where(x => desiredAppointmentSlots == null || desiredAppointmentSlots.Any(slot =>
                     slot.StartTime == x.StartTime.TimeOfDay && slot.EndTime == x.EndTime.TimeOfDay)
                 );
@@ -85,7 +85,7 @@ namespace HousingRepairsSchedulingApi.Gateways
             Guard.Against.NullOrWhiteSpace(orderComments, nameof(orderComments));
             Guard.Against.OutOfRange(endDateTime, nameof(endDateTime), startDateTime, DateTime.MaxValue);
 
-            var bookingId = await drsService.CreateOrder(bookingReference, sorCode, locationId, orderComments);
+            var bookingId = await drsService.CreateOrder(bookingReference, sorCode, priority, locationId, orderComments);
 
             var convertedStartTime = DrsHelpers.ConvertToDrsTimeZone(startDateTime);
             var convertedEndTime = DrsHelpers.ConvertToDrsTimeZone(endDateTime);

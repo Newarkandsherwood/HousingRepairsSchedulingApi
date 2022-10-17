@@ -30,8 +30,10 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             this.logger = logger;
         }
 
-        public async Task<IEnumerable<AppointmentSlot>> CheckAvailability(string sorCode, string locationId, DateTime earliestDate)
+        public async Task<IEnumerable<AppointmentSlot>> CheckAvailability(string sorCode, string priority, string locationId, DateTime earliestDate)
         {
+            Guard.Against.NullOrWhiteSpace(priority, nameof(priority));
+
             await EnsureSessionOpened();
 
             var checkAvailability = new xmbCheckAvailability
@@ -47,7 +49,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                     contract = drsOptions.Value.Contract,
                     locationID = locationId,
                     primaryOrderNumber = DummyPrimaryOrderNumber,
-                    priority = drsOptions.Value.Priority,
+                    priority = priority,
                     theBookingCodes = new[]{
                         new bookingCode {
                             bookingCodeSORCode = sorCode,
@@ -92,10 +94,11 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             return appointmentSlots;
         }
 
-        public async Task<int> CreateOrder(string bookingReference, string sorCode, string locationId, string orderComments)
+        public async Task<int> CreateOrder(string bookingReference, string sorCode, string priority, string locationId, string orderComments)
         {
             Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
             Guard.Against.NullOrWhiteSpace(sorCode, nameof(sorCode));
+            Guard.Against.NullOrWhiteSpace(priority, nameof(priority));
             Guard.Against.NullOrWhiteSpace(locationId, nameof(locationId));
 
             await EnsureSessionOpened();
@@ -109,7 +112,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
                     locationID = locationId,
                     orderComments = orderComments,
                     primaryOrderNumber = bookingReference,
-                    priority = drsOptions.Value.Priority,
+                    priority = priority,
                     targetDate = DateTime.Today.AddDays(20),
                     userId = DummyUserId,
                     theBookingCodes = new[]
