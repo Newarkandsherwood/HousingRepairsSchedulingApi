@@ -113,12 +113,10 @@ jobs:
           echo "drs_login_production                      = \"${{ secrets.DRS_LOGIN_PRODUCTION }}\"" >> env.tfvars
           echo "drs_password_production                   = \"${{ secrets.DRS_PASSWORD_PRODUCTION }}\"" >> env.tfvars
           echo "drs_contract_production                   = \"${{ secrets.DRS_CONTRACT_PRODUCTION }}\"" >> env.tfvars
-          echo "drs_priority_production                   = \"${{ secrets.DRS_PRIORITY_PRODUCTION }}\"" >> env.tfvars
           echo "drs_api_address_staging                   = \"${{ secrets.DRS_API_ADDRESS_STAGING }}\"" >> env.tfvars
           echo "drs_login_staging                         = \"${{ secrets.DRS_LOGIN_STAGING }}\"" >> env.tfvars
           echo "drs_password_staging                      = \"${{ secrets.DRS_PASSWORD_STAGING }}\"" >> env.tfvars
           echo "drs_contract_staging                      = \"${{ secrets.DRS_CONTRACT_STAGING }}\"" >> env.tfvars
-          echo "drs_priority_staging                      = \"${{ secrets.DRS_PRIORITY_STAGING }}\"" >> env.tfvars
 
       - name: Terraform Validate
         id: validate
@@ -150,7 +148,6 @@ jobs:
           echo "::add-mask::${{ secrets.DRS_LOGIN_STAGING }}"
           echo "::add-mask::${{ secrets.DRS_PASSWORD_STAGING }}"
           echo "::add-mask::${{ secrets.DRS_CONTRACT_STAGING }}"
-          echo "::add-mask::${{ secrets.DRS_PRIORITY_STAGING }}"
 
       - name: Download artifact from build job
         uses: actions/download-artifact@v2
@@ -183,7 +180,6 @@ jobs:
           echo "::add-mask::${{ secrets.DRS_LOGIN_PRODUCTION }}"
           echo "::add-mask::${{ secrets.DRS_PASSWORD_PRODUCTION }}"
           echo "::add-mask::${{ secrets.DRS_CONTRACT_PRODUCTION }}"
-          echo "::add-mask::${{ secrets.DRS_PRIORITY_PRODUCTION }}"
 
       - name: Download artifact from build job
         uses: actions/download-artifact@v2

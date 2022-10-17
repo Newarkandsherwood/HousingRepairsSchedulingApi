@@ -63,12 +63,6 @@ resource "azurerm_key_vault_secret" "drs-contract-staging" {
   value        = var.drs_contract_staging
   key_vault_id = azurerm_key_vault.hro-scheduling-api-key-vault.id
 }
-
-resource "azurerm_key_vault_secret" "drs-priority-staging" {
-  name         = "drs-priority-staging"
-  value        = var.drs_priority_staging
-  key_vault_id = azurerm_key_vault.hro-scheduling-api-key-vault.id
-}
 #=================================
 #====== Production Secrets
 
@@ -105,11 +99,5 @@ resource "azurerm_key_vault_secret" "drs-password-production" {
 resource "azurerm_key_vault_secret" "drs-contract-production" {
   name         = "drs-contract-production"
   value        = var.drs_contract_production
-  key_vault_id = azurerm_key_vault.hro-scheduling-api-key-vault.id
-}
-
-resource "azurerm_key_vault_secret" "drs-priority-production" {
-  name         = "drs-priority-production"
-  value        = var.drs_priority_production
   key_vault_id = azurerm_key_vault.hro-scheduling-api-key-vault.id
 }
