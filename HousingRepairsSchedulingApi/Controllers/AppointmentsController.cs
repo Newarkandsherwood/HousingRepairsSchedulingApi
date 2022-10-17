@@ -24,7 +24,8 @@ namespace HousingRepairsSchedulingApi.Controllers
 
         [HttpGet]
         [Route("AvailableAppointments")]
-        public async Task<IActionResult> AvailableAppointments([FromQuery] string sorCode, [FromQuery] string locationId, [FromQuery] DateTime? fromDate = null, [FromBody] IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
+        public async Task<IActionResult> AvailableAppointments([FromQuery] string sorCode, [FromQuery] string priority,
+            [FromQuery] string locationId, [FromQuery] DateTime? fromDate = null, [FromBody] IEnumerable<AppointmentSlotTimeSpan> allowedAppointmentSlots = default)
         {
             try
             {
@@ -42,6 +43,7 @@ namespace HousingRepairsSchedulingApi.Controllers
         [Route("BookAppointment")]
         public async Task<IActionResult> BookAppointment([FromQuery] string bookingReference,
             [FromQuery] string sorCode,
+            [FromQuery] string priority,
             [FromQuery] string locationId,
             [FromQuery] DateTime startDateTime,
             [FromQuery] DateTime endDateTime,

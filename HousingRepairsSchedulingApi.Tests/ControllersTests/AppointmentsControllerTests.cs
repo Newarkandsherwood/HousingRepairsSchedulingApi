@@ -13,6 +13,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
     public class AppointmentsControllerTests : ControllerTests
     {
         private const string SorCode = "SOR Code";
+        private const string Priority = "Priority";
         private const string LocationId = "locationId";
         private RepairDescription orderComments = new RepairDescription { Text = "something" };
         private AppointmentsController systemUndertest;
@@ -31,7 +32,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         [Fact]
         public async Task TestAvailableAppointmentsEndpoint()
         {
-            var result = await systemUndertest.AvailableAppointments(SorCode, LocationId);
+            var result = await systemUndertest.AvailableAppointments(SorCode, Priority, LocationId);
             GetStatusCode(result).Should().Be(200);
             availableAppointmentsUseCaseMock.Verify(x => x.Execute(SorCode, LocationId, null, null), Times.Once);
         }
@@ -45,7 +46,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             availableAppointmentsUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), null, null))
                 .Throws(new Exception(errorMessage));
 
-            var result = await systemUndertest.AvailableAppointments(SorCode, LocationId);
+            var result = await systemUndertest.AvailableAppointments(SorCode, Priority, LocationId);
 
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);
@@ -58,7 +59,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var startDateTime = It.IsAny<DateTime>();
             var endDateTime = It.IsAny<DateTime>();
 
-            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, Priority, LocationId, startDateTime, endDateTime, orderComments);
             GetStatusCode(result).Should().Be(200);
         }
 
@@ -73,7 +74,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             var fromDate = new DateTime(2021, 12, 15);
 
             // Act
-            var result = await systemUndertest.AvailableAppointments(sorCode, locationId, fromDate);
+            var result = await systemUndertest.AvailableAppointments(sorCode, Priority, locationId, fromDate);
 
             // Assert
             GetStatusCode(result).Should().Be(200);
@@ -90,7 +91,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             const string errorMessage = "An error message";
             bookAppointmentUseCaseMock.Setup(x => x.Execute(It.IsAny<String>(), It.IsAny<String>(), It.IsAny<String>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<string>())).Throws(new Exception(errorMessage));
 
-            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, LocationId, startDateTime, endDateTime, orderComments);
+            var result = await systemUndertest.BookAppointment(bookingReference, SorCode, Priority, LocationId, startDateTime, endDateTime, orderComments);
 
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);
