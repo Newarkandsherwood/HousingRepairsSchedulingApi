@@ -96,5 +96,65 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             GetStatusCode(result).Should().Be(500);
             GetResultData<string>(result).Should().Be(errorMessage);
         }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenNonCancelledAppointmentBookingReference_WhenCancellingAppointment_ThenResponseHasStatus200()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var bookingReference = "bookingReference";
+
+            // Act
+            var result = await systemUndertest.CancelAppointment(bookingReference);
+
+            // Assert
+            GetStatusCode(result).Should().Be(200);
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenCancelledAppointmentBookingReference_WhenCancellingAppointment_ThenResponseHasStatus200()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var cancelledBookingReference = "cancelledBookingReference";
+
+            // Act
+            var result = await systemUndertest.CancelAppointment(cancelledBookingReference);
+
+            // Assert
+            GetStatusCode(result).Should().Be(200);
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenAppointmentIsNotFound_WhenCancellingAppointment_ThenResponseHasStatus404()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var noAppointmentBookingReference = "noAppointmentBookingReference";
+
+            // Act
+            var result = await systemUndertest.CancelAppointment(noAppointmentBookingReference);
+
+            // Assert
+            GetStatusCode(result).Should().Be(404);
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenAppointmentWasNotCancelled_WhenCancellingAppointment_ThenResponseHasStatus500()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var unableToCancelAppointmentBookingReference = "unableToCancelAppointmentBookingReference";
+
+            // Act
+            var result = await systemUndertest.CancelAppointment(unableToCancelAppointmentBookingReference);
+
+            // Assert
+            GetStatusCode(result).Should().Be(500);
+        }
     }
 }
