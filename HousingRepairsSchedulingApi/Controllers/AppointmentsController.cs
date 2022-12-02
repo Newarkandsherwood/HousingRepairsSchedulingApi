@@ -61,5 +61,22 @@ namespace HousingRepairsSchedulingApi.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+        [HttpPost]
+        [Route(nameof(CancelAppointment))]
+        public async Task<IActionResult> CancelAppointment([FromQuery] string bookingReference)
+        {
+            if (bookingReference == "noAppointmentBookingReference")
+            {
+                return NotFound();
+            }
+
+            if (bookingReference == "unableToCancelAppointmentBookingReference")
+            {
+                return StatusCode(500);
+            }
+
+            return Ok();
+        }
     }
 }
