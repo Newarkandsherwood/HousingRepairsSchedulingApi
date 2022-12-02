@@ -93,5 +93,7 @@ namespace HousingRepairsSchedulingApi.Gateways
 
             return bookingReference;
         }
+
+        public Task<CancelAppointmentStatus> CancelAppointment(string bookingReference) => throw new NotImplementedException();
     }
 }

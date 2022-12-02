@@ -1,8 +1,9 @@
 namespace HousingRepairsSchedulingApi.UseCases;
 
 using System.Threading.Tasks;
+using Domain;
 
 public interface ICancelAppointmentUseCase
 {
-    public Task<CancelAppointmentUseCaseResult> Execute(string bookingReference);
+    public Task<CancelAppointmentStatus> Execute(string bookingReference);
 }

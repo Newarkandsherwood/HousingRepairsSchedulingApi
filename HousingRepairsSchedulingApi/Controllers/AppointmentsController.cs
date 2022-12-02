@@ -75,12 +75,12 @@ namespace HousingRepairsSchedulingApi.Controllers
 
                 switch (cancelAppointmentUseCaseResult)
                 {
-                    case CancelAppointmentUseCaseResult.AppointmentNotFound:
+                    case CancelAppointmentStatus.AppointmentNotFound:
                         return NotFound();
-                    case CancelAppointmentUseCaseResult.Success:
+                    case CancelAppointmentStatus.Success:
                         return Ok();
-                    case CancelAppointmentUseCaseResult.Failed:
-                    case CancelAppointmentUseCaseResult.Unknown:
+                    case CancelAppointmentStatus.Failed:
+                    case CancelAppointmentStatus.Unknown:
                     default:
                         return StatusCode(500);
                 }

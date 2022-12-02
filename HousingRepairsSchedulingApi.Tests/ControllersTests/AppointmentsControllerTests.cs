@@ -109,7 +109,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             // Arrange
             var bookingReference = "bookingReference";
             cancelAppointmentUseCaseMock.Setup(x => x.Execute(bookingReference))
-                .ReturnsAsync(CancelAppointmentUseCaseResult.Success);
+                .ReturnsAsync(CancelAppointmentStatus.Success);
 
             // Act
             var result = await systemUndertest.CancelAppointment(bookingReference);
@@ -126,7 +126,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             // Arrange
             var cancelledBookingReference = "cancelledBookingReference";
             cancelAppointmentUseCaseMock.Setup(x => x.Execute(cancelledBookingReference))
-                .ReturnsAsync(CancelAppointmentUseCaseResult.Success);
+                .ReturnsAsync(CancelAppointmentStatus.Success);
 
             // Act
             var result = await systemUndertest.CancelAppointment(cancelledBookingReference);
@@ -143,7 +143,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             // Arrange
             var noAppointmentBookingReference = "noAppointmentBookingReference";
             cancelAppointmentUseCaseMock.Setup(x => x.Execute(noAppointmentBookingReference))
-                .ReturnsAsync(CancelAppointmentUseCaseResult.AppointmentNotFound);
+                .ReturnsAsync(CancelAppointmentStatus.AppointmentNotFound);
 
             // Act
             var result = await systemUndertest.CancelAppointment(noAppointmentBookingReference);
@@ -160,7 +160,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             // Arrange
             var unableToCancelAppointmentBookingReference = "unableToCancelAppointmentBookingReference";
             cancelAppointmentUseCaseMock.Setup(x => x.Execute(unableToCancelAppointmentBookingReference))
-                .ReturnsAsync(CancelAppointmentUseCaseResult.Failed);
+                .ReturnsAsync(CancelAppointmentStatus.Failed);
 
             // Act
             var result = await systemUndertest.CancelAppointment(unableToCancelAppointmentBookingReference);
@@ -177,7 +177,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             // Arrange
             var unableToCancelAppointmentBookingReference = "unableToCancelAppointmentBookingReference";
             cancelAppointmentUseCaseMock.Setup(x => x.Execute(unableToCancelAppointmentBookingReference))
-                .Returns(Task.FromCanceled<CancelAppointmentUseCaseResult>(new CancellationToken(true)));
+                .Returns(Task.FromCanceled<CancelAppointmentStatus>(new CancellationToken(true)));
 
             // Act
             var result = await systemUndertest.CancelAppointment(unableToCancelAppointmentBookingReference);
