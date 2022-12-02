@@ -42,6 +42,7 @@ namespace HousingRepairsSchedulingApi
             services.AddControllers();
             services.AddTransient<IRetrieveAvailableAppointmentsUseCase, RetrieveAvailableAppointmentsUseCase>();
             services.AddTransient<IBookAppointmentUseCase, BookAppointmentUseCase>();
+            services.AddTransient<ICancelAppointmentUseCase, CancelAppointmentUseCase>();
 
             ConfigureOptions(services);
 

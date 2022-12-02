@@ -14,12 +14,14 @@ namespace HousingRepairsSchedulingApi.Controllers
     {
         private readonly IRetrieveAvailableAppointmentsUseCase retrieveAvailableAppointmentsUseCase;
         private readonly IBookAppointmentUseCase bookAppointmentUseCase;
+        private readonly ICancelAppointmentUseCase cancelAppointmentUseCase;
 
         public AppointmentsController(IRetrieveAvailableAppointmentsUseCase retrieveAvailableAppointmentsUseCase,
-            IBookAppointmentUseCase bookAppointmentUseCase)
+            IBookAppointmentUseCase bookAppointmentUseCase, ICancelAppointmentUseCase cancelAppointmentUseCase)
         {
             this.retrieveAvailableAppointmentsUseCase = retrieveAvailableAppointmentsUseCase;
             this.bookAppointmentUseCase = bookAppointmentUseCase;
+            this.cancelAppointmentUseCase = cancelAppointmentUseCase;
         }
 
         [HttpGet]
@@ -66,17 +68,28 @@ namespace HousingRepairsSchedulingApi.Controllers
         [Route(nameof(CancelAppointment))]
         public async Task<IActionResult> CancelAppointment([FromQuery] string bookingReference)
         {
-            if (bookingReference == "noAppointmentBookingReference")
+            try
             {
-                return NotFound();
-            }
+                var cancelAppointmentTask = cancelAppointmentUseCase.Execute(bookingReference);
+                var cancelAppointmentUseCaseResult = await cancelAppointmentTask;
 
-            if (bookingReference == "unableToCancelAppointmentBookingReference")
+                switch (cancelAppointmentUseCaseResult)
+                {
+                    case CancelAppointmentUseCaseResult.AppointmentNotFound:
+                        return NotFound();
+                    case CancelAppointmentUseCaseResult.Success:
+                        return Ok();
+                    case CancelAppointmentUseCaseResult.Failed:
+                    case CancelAppointmentUseCaseResult.Unknown:
+                    default:
+                        return StatusCode(500);
+                }
+            }
+            catch (Exception ex)
             {
-                return StatusCode(500);
+                SentrySdk.CaptureException(ex);
+                return StatusCode(500, ex.Message);
             }
-
-            return Ok();
         }
     }
 }
