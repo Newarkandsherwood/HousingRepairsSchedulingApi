@@ -78,5 +78,24 @@ namespace HousingRepairsSchedulingApi.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        [Route(nameof(UpdateAppointmentSlot))]
+        public async Task<IActionResult> UpdateAppointmentSlot([FromQuery] string bookingReference,
+            [FromQuery] DateTime startDateTime,
+            [FromQuery] DateTime endDateTime)
+        {
+            if (bookingReference == "noAppointmentBookingReference")
+            {
+                return NotFound();
+            }
+
+            if (bookingReference == "UnableToUpdateAppointmentSlot")
+            {
+                return StatusCode(500);
+            }
+
+            return Ok();
+        }
     }
 }
