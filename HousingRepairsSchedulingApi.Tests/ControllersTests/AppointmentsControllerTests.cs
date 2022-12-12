@@ -156,5 +156,50 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             // Assert
             GetStatusCode(result).Should().Be(500);
         }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenNonCancelledAppointmentBookingReference_WhenUpdatingAppointment_ThenResponseHasStatus200()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var bookingReference = "bookingReference";
+
+            // Act
+            var result = await systemUndertest.UpdateAppointmentSlot(bookingReference, new DateTime(), new DateTime());
+
+            // Assert
+            GetStatusCode(result).Should().Be(200);
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenNotExisingAppointmentBookingReference_WhenUpdatingAppointment_ThenResponseHasStatus404()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var bookingReference = "noAppointmentBookingReference";
+
+            // Act
+            var result = await systemUndertest.UpdateAppointmentSlot(bookingReference, new DateTime(), new DateTime());
+
+            // Assert
+            GetStatusCode(result).Should().Be(404);
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async Task GivenErrorAppointmentBookingReference_WhenUpdatingAppointment_ThenResponseHasStatus500()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var bookingReference = "UnableToUpdateAppointmentSlot";
+
+            // Act
+            var result = await systemUndertest.UpdateAppointmentSlot(bookingReference, new DateTime(), new DateTime());
+
+            // Assert
+            GetStatusCode(result).Should().Be(500);
+        }
     }
 }
