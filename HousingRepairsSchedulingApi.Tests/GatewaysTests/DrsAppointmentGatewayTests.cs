@@ -765,5 +765,60 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Assert
             Assert.Equal(BookingReference, actual);
         }
+
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenAnInvalidBookingReference_WhenUpdatingAppointment_ThenExceptionIsThrown<T>(T exception, string bookingReference) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.UpdateAppointment(bookingReference, It.IsAny<DateTime>(), It.IsAny<DateTime>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenAnEndDateEarlierThanTheStartDate_WhenUpdatingAppointment_ThenInvalidExceptionIsThrown()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var startDate = new DateTime(2022, 1, 21);
+            var endDate = startDate.AddDays(-1);
+
+            // Act
+            Func<Task> act = async () =>
+                await systemUnderTest.UpdateAppointment(BookingReference, startDate, endDate);
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<ArgumentOutOfRangeException>();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenValidArguments_WhenUpdatingAppointment_ThenBookingReferenceIsReturned()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var order = new order { theBookings = new[] { new booking() } };
+
+            drsServiceMock.Setup(x =>
+                x.SelectOrder(It.IsAny<string>())
+            ).ReturnsAsync(order);
+
+            // Act
+            var startDateTime = new DateTime(2022, 05, 01);
+            var actual = await systemUnderTest.UpdateAppointment(BookingReference,
+                startDateTime, startDateTime.AddDays(1));
+
+            // Assert
+            Assert.Equal(BookingReference, actual);
+        }
     }
 }

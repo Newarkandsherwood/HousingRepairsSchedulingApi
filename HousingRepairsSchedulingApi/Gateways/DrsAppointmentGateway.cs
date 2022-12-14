@@ -87,11 +87,29 @@ namespace HousingRepairsSchedulingApi.Gateways
 
             var bookingId = await drsService.CreateOrder(bookingReference, sorCode, priority, locationId, orderComments);
 
+            await ScheduleBooking(bookingReference, bookingId, startDateTime, endDateTime);
+
+            return bookingReference;
+        }
+
+        public async Task<string> UpdateAppointment(string bookingReference, DateTime startDateTime, DateTime endDateTime)
+        {
+            Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
+            Guard.Against.OutOfRange(endDateTime, nameof(endDateTime), startDateTime, DateTime.MaxValue);
+
+            var order = await drsService.SelectOrder(bookingReference);
+            var bookingId = order.theBookings.First().bookingId;
+
+            await ScheduleBooking(bookingReference, bookingId, startDateTime, endDateTime);
+
+            return bookingReference;
+        }
+
+        private async Task ScheduleBooking(string bookingReference, int bookingId, DateTime startDateTime, DateTime endDateTime)
+        {
             var convertedStartTime = DrsHelpers.ConvertToDrsTimeZone(startDateTime);
             var convertedEndTime = DrsHelpers.ConvertToDrsTimeZone(endDateTime);
             await drsService.ScheduleBooking(bookingReference, bookingId, convertedStartTime, convertedEndTime);
-
-            return bookingReference;
         }
     }
 }

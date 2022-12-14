@@ -46,5 +46,7 @@ namespace HousingRepairsSchedulingApi.Gateways
         public Task<string> BookAppointment(string bookingReference, string sorCode, string priority, string locationId, DateTime startDateTime,
             DateTime endDateTime, string orderComments) =>
             throw new NotImplementedException();
+
+        public Task<string> UpdateAppointment(string bookingReference, DateTime startDateTime, DateTime endDateTime) => throw new NotImplementedException();
     }
 }
