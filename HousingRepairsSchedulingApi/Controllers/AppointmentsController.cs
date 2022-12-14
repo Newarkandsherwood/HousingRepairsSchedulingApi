@@ -14,12 +14,14 @@ namespace HousingRepairsSchedulingApi.Controllers
     {
         private readonly IRetrieveAvailableAppointmentsUseCase retrieveAvailableAppointmentsUseCase;
         private readonly IBookAppointmentUseCase bookAppointmentUseCase;
+        private readonly IUpdateAppointmentUseCase updateAppointmentUseCase;
 
         public AppointmentsController(IRetrieveAvailableAppointmentsUseCase retrieveAvailableAppointmentsUseCase,
-            IBookAppointmentUseCase bookAppointmentUseCase)
+            IBookAppointmentUseCase bookAppointmentUseCase, IUpdateAppointmentUseCase updateAppointmentUseCase)
         {
             this.retrieveAvailableAppointmentsUseCase = retrieveAvailableAppointmentsUseCase;
             this.bookAppointmentUseCase = bookAppointmentUseCase;
+            this.updateAppointmentUseCase = updateAppointmentUseCase;
         }
 
         [HttpGet]
@@ -85,17 +87,21 @@ namespace HousingRepairsSchedulingApi.Controllers
             [FromQuery] DateTime startDateTime,
             [FromQuery] DateTime endDateTime)
         {
-            if (bookingReference == "noAppointmentBookingReference")
+            try
             {
-                return NotFound();
-            }
+                var result = await updateAppointmentUseCase.Execute(bookingReference, startDateTime, endDateTime);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return NotFound();
+                }
 
-            if (bookingReference == "UnableToUpdateAppointmentSlot")
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                return StatusCode(500);
+                SentrySdk.CaptureException(ex);
+                return StatusCode(500, ex.Message);
             }
-
-            return Ok();
         }
     }
 }

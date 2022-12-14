@@ -19,6 +19,7 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         private AppointmentsController systemUndertest;
         private Mock<IRetrieveAvailableAppointmentsUseCase> availableAppointmentsUseCaseMock;
         private Mock<IBookAppointmentUseCase> bookAppointmentUseCaseMock;
+        private Mock<IUpdateAppointmentUseCase> updateAppointmentUseCaseMock = new();
 
         public AppointmentsControllerTests()
         {
@@ -26,7 +27,8 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
             bookAppointmentUseCaseMock = new Mock<IBookAppointmentUseCase>();
             systemUndertest = new AppointmentsController(
                 availableAppointmentsUseCaseMock.Object,
-                bookAppointmentUseCaseMock.Object);
+                bookAppointmentUseCaseMock.Object,
+                updateAppointmentUseCaseMock.Object);
         }
 
         [Fact]
@@ -164,6 +166,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
             // Arrange
             var bookingReference = "bookingReference";
+            updateAppointmentUseCaseMock.Setup(x =>
+                    x.Execute(bookingReference, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(bookingReference);
 
             // Act
             var result = await systemUndertest.UpdateAppointmentSlot(bookingReference, new DateTime(), new DateTime());
@@ -179,6 +184,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
             // Arrange
             var bookingReference = "noAppointmentBookingReference";
+            updateAppointmentUseCaseMock.Setup(x =>
+                    x.Execute(bookingReference, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(string.Empty);
 
             // Act
             var result = await systemUndertest.UpdateAppointmentSlot(bookingReference, new DateTime(), new DateTime());
@@ -194,6 +202,9 @@ namespace HousingRepairsSchedulingApi.Tests.ControllersTests
         {
             // Arrange
             var bookingReference = "UnableToUpdateAppointmentSlot";
+            updateAppointmentUseCaseMock.Setup(x =>
+                    x.Execute(bookingReference, It.IsAny<DateTime>(), It.IsAny<DateTime>()))
+                .ThrowsAsync(new Exception());
 
             // Act
             var result = await systemUndertest.UpdateAppointmentSlot(bookingReference, new DateTime(), new DateTime());
