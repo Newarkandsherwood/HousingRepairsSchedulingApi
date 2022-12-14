@@ -12,5 +12,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
         Task<int> CreateOrder(string bookingReference, string sorCode, string priority, string locationId, string orderComments);
 
         Task ScheduleBooking(string bookingReference, int bookingId, DateTime startDateTime, DateTime endDateTime);
+
+        Task<order> SelectOrder(string bookingReference);
     }
 }

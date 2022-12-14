@@ -157,6 +157,33 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             _ = await drsSoapClient.scheduleBookingAsync(new scheduleBooking(scheduleBooking));
         }
 
+        public async Task<order> SelectOrder(string bookingReference)
+        {
+            Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
+
+            await EnsureSessionOpened();
+
+            var selectOrder = new xmbSelectOrder
+            {
+                sessionId = sessionId,
+                primaryOrderNumber = new[] { bookingReference },
+            };
+
+            order drsOrder;
+            var selectOrderResponse = await drsSoapClient.selectOrderAsync(new selectOrder(selectOrder));
+            if (selectOrderResponse.@return.status == responseStatus.success &&
+                selectOrderResponse.@return.theOrders != null && selectOrderResponse.@return.theOrders.Any())
+            {
+                drsOrder = selectOrderResponse.@return.theOrders.First();
+            }
+            else
+            {
+                drsOrder = null;
+            }
+
+            return drsOrder;
+        }
+
         private async Task OpenSession()
         {
             var xmbOpenSession = new xmbOpenSession

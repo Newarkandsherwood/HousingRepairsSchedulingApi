@@ -533,6 +533,95 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             actualPriority.Should().Be(drsPriority);
         }
 
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenInvalidBookingReference_WhenSelectingAnOrder_ThenExceptionIsThrown<T>(T exception, string bookingReference) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            var act = async () => await systemUnderTest.SelectOrder(bookingReference);
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenValidBookingReference_WhenSelectingAnOrder_ThenDrsSoapScheduleBookingIsCalled()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            soapMock.Setup(x => x.selectOrderAsync(It.IsAny<selectOrder>()))
+                .ReturnsAsync(new selectOrderResponse(new xmbSelectOrderResponse { status = responseStatus.success, }));
+
+            // Act
+            await systemUnderTest.SelectOrder(BookingReference);
+
+            // Assert
+            soapMock.Verify((Expression<Action<SOAP>>)(x => x.selectOrderAsync(It.IsAny<selectOrder>())));
+        }
+
+        [Theory]
+        [InlineData(responseStatus.error)]
+        [InlineData(responseStatus.failure)]
+        [InlineData(responseStatus.undefined)]
+#pragma warning disable CA1707
+        public async void GivenNonSuccessStatus_WhenSelectingAnOrder_ThenNullIsReturned(responseStatus responseStatus)
+#pragma warning restore CA1707
+        {
+            // Arrange
+            soapMock.Setup(x => x.selectOrderAsync(It.IsAny<selectOrder>()))
+                .ReturnsAsync(new selectOrderResponse(new xmbSelectOrderResponse { status = responseStatus, }));
+
+            // Act
+            var actual = await systemUnderTest.SelectOrder(BookingReference);
+
+            // Assert
+            actual.Should().BeNull();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenNoOrdersFound_WhenSelectingAnOrder_ThenNullIsReturned()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            soapMock.Setup(x => x.selectOrderAsync(It.IsAny<selectOrder>()))
+                .ReturnsAsync(new selectOrderResponse(new xmbSelectOrderResponse { status = responseStatus.success, }));
+
+            // Act
+            var actual = await systemUnderTest.SelectOrder(BookingReference);
+
+            // Assert
+            actual.Should().BeNull();
+        }
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenAtLeastOneOrderFound_WhenSelectingAnOrder_ThenOrderIsReturned()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var expected = new order();
+            soapMock.Setup(x => x.selectOrderAsync(It.IsAny<selectOrder>()))
+                .ReturnsAsync(new selectOrderResponse(new xmbSelectOrderResponse
+                {
+                    status = responseStatus.success,
+                    theOrders = new[] { expected }
+                }));
+
+            // Act
+            var actual = await systemUnderTest.SelectOrder(BookingReference);
+
+            // Assert
+            actual.Should().BeEquivalentTo(expected);
+        }
+
         private static DrsService CreateDrsService(SOAP soapClient, IOptions<DrsOptions> drsOptions, Func<ILogger<DrsService>> createLoggerFunction = default)
         {
             var loggerMock = createLoggerFunction != null
