@@ -146,6 +146,8 @@ namespace HousingRepairsSchedulingApi
                 throw new NotSupportedException($"Unsupported URI scheme '{uriScheme}' used by '{uri}'");
             }
 
+            binding.MaxReceivedMessageSize = int.MaxValue;
+
             return binding;
         }
     }
