@@ -13,5 +13,7 @@ namespace HousingRepairsSchedulingApi.Gateways
         Task<string> BookAppointment(string bookingReference, string sorCode, string priority, string locationId, DateTime startDateTime, DateTime endDateTime, string orderComments);
 
         Task<string> UpdateAppointment(string bookingReference, DateTime startDateTime, DateTime endDateTime);
+
+        Task<string> CancelAppointment(string bookingReference);
     }
 }

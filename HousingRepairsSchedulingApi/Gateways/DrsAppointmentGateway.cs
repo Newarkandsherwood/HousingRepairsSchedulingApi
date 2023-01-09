@@ -105,6 +105,18 @@ namespace HousingRepairsSchedulingApi.Gateways
             return bookingReference;
         }
 
+        public async Task<string> CancelAppointment(string bookingReference)
+        {
+            Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
+
+            var order = await drsService.SelectOrder(bookingReference);
+            var bookingId = order.theBookings.First().bookingId;
+
+            await drsService.DeleteBooking(bookingReference, bookingId);
+
+            return bookingReference;
+        }
+
         private async Task ScheduleBooking(string bookingReference, int bookingId, DateTime startDateTime, DateTime endDateTime)
         {
             var convertedStartTime = DrsHelpers.ConvertToDrsTimeZone(startDateTime);
