@@ -820,5 +820,41 @@ namespace HousingRepairsSchedulingApi.Tests.GatewaysTests
             // Assert
             Assert.Equal(BookingReference, actual);
         }
+
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenAnInvalidBookingReference_WhenCancellingAppointment_ThenExceptionIsThrown<T>(T exception, string bookingReference) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            Func<Task> act = async () => await systemUnderTest.CancelAppointment(bookingReference);
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
+
+        [Fact]
+#pragma warning disable CA1707
+        public async void GivenValidArguments_WhenCancellingAppointment_ThenBookingReferenceIsReturned()
+#pragma warning restore CA1707
+        {
+            // Arrange
+            var order = new order { theBookings = new[] { new booking() } };
+
+            drsServiceMock.Setup(x => x.SelectOrder(It.IsAny<string>()))
+                .ReturnsAsync(order);
+
+            // Act
+            var actual = await systemUnderTest.CancelAppointment(BookingReference);
+
+            // Assert
+            Assert.Equal(BookingReference, actual);
+        }
     }
 }

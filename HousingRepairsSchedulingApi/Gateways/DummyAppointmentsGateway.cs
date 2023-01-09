@@ -48,5 +48,7 @@ namespace HousingRepairsSchedulingApi.Gateways
             throw new NotImplementedException();
 
         public Task<string> UpdateAppointment(string bookingReference, DateTime startDateTime, DateTime endDateTime) => throw new NotImplementedException();
+
+        public Task<string> CancelAppointment(string bookingReference) => throw new NotImplementedException();
     }
 }
