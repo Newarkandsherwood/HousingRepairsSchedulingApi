@@ -14,5 +14,7 @@ namespace HousingRepairsSchedulingApi.Services.Drs
         Task ScheduleBooking(string bookingReference, int bookingId, DateTime startDateTime, DateTime endDateTime);
 
         Task<order> SelectOrder(string bookingReference);
+
+        Task DeleteBooking(string bookingReference, int bookingId);
     }
 }

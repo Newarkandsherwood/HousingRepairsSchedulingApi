@@ -380,6 +380,23 @@ namespace HousingRepairsSchedulingApi.Tests.ServicesTests.Drs
             soapMock.Verify(schedulingBookingExpression);
         }
 
+        [Theory]
+        [MemberData(nameof(InvalidArgumentTestData))]
+#pragma warning disable xUnit1026
+#pragma warning disable CA1707
+        public async void GivenInvalidBookingReference_WhenDeletingABooking_ThenExceptionIsThrown<T>(T exception, string bookingReference) where T : Exception
+#pragma warning restore CA1707
+#pragma warning restore xUnit1026
+        {
+            // Arrange
+
+            // Act
+            var act = async () => await systemUnderTest.DeleteBooking(bookingReference, It.IsAny<int>());
+
+            // Assert
+            await act.Should().ThrowExactlyAsync<T>();
+        }
+
         public static IEnumerable<object[]> InvalidArgumentTestData()
         {
             yield return new object[] { new ArgumentNullException(), null };
