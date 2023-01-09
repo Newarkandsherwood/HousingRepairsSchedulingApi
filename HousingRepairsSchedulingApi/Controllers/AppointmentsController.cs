@@ -15,13 +15,15 @@ namespace HousingRepairsSchedulingApi.Controllers
         private readonly IRetrieveAvailableAppointmentsUseCase retrieveAvailableAppointmentsUseCase;
         private readonly IBookAppointmentUseCase bookAppointmentUseCase;
         private readonly IUpdateAppointmentUseCase updateAppointmentUseCase;
+        private readonly ICancelAppointmentUseCase cancelAppointmentUseCase;
 
         public AppointmentsController(IRetrieveAvailableAppointmentsUseCase retrieveAvailableAppointmentsUseCase,
-            IBookAppointmentUseCase bookAppointmentUseCase, IUpdateAppointmentUseCase updateAppointmentUseCase)
+            IBookAppointmentUseCase bookAppointmentUseCase, IUpdateAppointmentUseCase updateAppointmentUseCase, ICancelAppointmentUseCase cancelAppointmentUseCase)
         {
             this.retrieveAvailableAppointmentsUseCase = retrieveAvailableAppointmentsUseCase;
             this.bookAppointmentUseCase = bookAppointmentUseCase;
             this.updateAppointmentUseCase = updateAppointmentUseCase;
+            this.cancelAppointmentUseCase = cancelAppointmentUseCase;
         }
 
         [HttpGet]
@@ -68,17 +70,21 @@ namespace HousingRepairsSchedulingApi.Controllers
         [Route(nameof(CancelAppointment))]
         public async Task<IActionResult> CancelAppointment([FromQuery] string bookingReference)
         {
-            if (bookingReference == "noAppointmentBookingReference")
+            try
             {
-                return NotFound();
-            }
+                var result = await cancelAppointmentUseCase.Execute(bookingReference);
+                if (string.IsNullOrEmpty(result))
+                {
+                    return NotFound();
+                }
 
-            if (bookingReference == "unableToCancelAppointmentBookingReference")
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
-                return StatusCode(500);
+                SentrySdk.CaptureException(ex);
+                return StatusCode(500, ex.Message);
             }
-
-            return Ok();
         }
 
         [HttpPost]
