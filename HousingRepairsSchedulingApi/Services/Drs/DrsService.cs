@@ -184,6 +184,28 @@ namespace HousingRepairsSchedulingApi.Services.Drs
             return drsOrder;
         }
 
+        public async Task DeleteBooking(string bookingReference, int bookingId)
+        {
+            Guard.Against.NullOrWhiteSpace(bookingReference, nameof(bookingReference));
+
+            await EnsureSessionOpened();
+            var deleteBooking = new deleteBooking
+            {
+                deleteBooking1 = new xmbDeleteBooking
+                {
+                    sessionId = sessionId,
+                    theBooking = new booking
+                    {
+                        bookingId = bookingId,
+                        primaryOrderNumber = bookingReference,
+                        contract = drsOptions.Value.Contract,
+                    }
+                }
+            };
+
+            _ = await drsSoapClient.deleteBookingAsync(deleteBooking);
+        }
+
         private async Task OpenSession()
         {
             var xmbOpenSession = new xmbOpenSession
